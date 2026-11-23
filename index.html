@@ -3,38 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>시의 마음을 읽다 | 한국 시 감정 분석</title>
+<title>시의 마음을 읽다</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
+  background: #faf7f2;
+  color: #34313d;
   font-family: "Malgun Gothic", sans-serif;
-  background: #fff9f3;
-  color: #403b42;
 }
 
 header {
-  background: linear-gradient(135deg, #f8dce6, #e6e4ff);
-  text-align: center;
+  background: #353047;
+  color: white;
   padding: 55px 20px;
+  text-align: center;
 }
 
-header h1 {
-  font-size: 36px;
-  margin: 0 0 15px;
-}
-
-header p {
-  font-size: 16px;
-  color: #666;
-}
+header h1 { font-size: 36px; }
+header p { color: #e1dce9; }
 
 main {
-  max-width: 1050px;
+  max-width: 1100px;
   margin: 30px auto;
   padding: 15px;
 }
@@ -42,73 +34,76 @@ main {
 .card {
   background: white;
   padding: 25px;
-  border-radius: 20px;
-  margin-bottom: 25px;
-  box-shadow: 0 5px 20px #0000000a;
+  margin-bottom: 20px;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px #00000009;
 }
 
-h2 {
-  color: #a65c80;
-}
+h2 { color: #77569a; }
 
 select, textarea, button {
   width: 100%;
-  padding: 14px;
-  border: 1px solid #ddd;
+  padding: 13px;
   border-radius: 10px;
-  font-size: 16px;
+  border: 1px solid #ddd;
+  font: inherit;
   margin-top: 10px;
-  font-family: inherit;
 }
 
 button {
-  background: #b67d9a;
+  background: #77569a;
   color: white;
-  border: none;
   cursor: pointer;
+  border: none;
 }
 
-button:hover {
-  background: #955c7a;
-}
+button:hover { background: #594077; }
 
 .poem {
   white-space: pre-wrap;
   line-height: 2.2;
-  background: #fffafc;
+  background: #faf7fd;
   padding: 20px;
   border-radius: 12px;
 }
 
-.emotion {
-  margin: 18px 0;
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 .bar {
-  background: #f1edf0;
-  height: 22px;
-  border-radius: 12px;
+  background: #eeeaf1;
+  height: 20px;
+  border-radius: 10px;
   overflow: hidden;
-  margin-top: 7px;
+  margin: 7px 0 17px;
 }
 
 .fill {
   height: 100%;
-  border-radius: 12px;
-  transition: width 0.4s;
+  border-radius: 10px;
 }
 
-.result {
-  padding: 18px;
-  background: #f9f0f5;
-  border-radius: 12px;
-  margin-top: 20px;
-}
-
-.line-result {
+.line {
+  padding: 12px;
   border-bottom: 1px solid #eee;
-  padding: 12px 0;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+td, th {
+  padding: 9px;
+  border: 1px solid #eee;
+  text-align: center;
+}
+
+.table-wrap { overflow-x: auto; }
 
 footer {
   text-align: center;
@@ -116,14 +111,10 @@ footer {
   color: #777;
 }
 
-@media(max-width: 600px) {
-  header h1 {
-    font-size: 27px;
-  }
-
-  .card {
-    padding: 18px;
-  }
+@media(max-width: 700px) {
+  .grid { grid-template-columns: 1fr; }
+  header h1 { font-size: 28px; }
+  .card { padding: 17px; }
 }
 </style>
 </head>
@@ -133,64 +124,69 @@ footer {
 <header>
   <h1>🌸 시의 마음을 읽다</h1>
   <p>한국 시에 담긴 감정을 데이터로 만나는 공간</p>
-  <p>한국 시 감정 분석 프로젝트</p>
+  <p>한국 시 감정 분석 아틀리에</p>
 </header>
 
 <main>
 
 <section class="card">
-  <h2>📖 시 선택하기</h2>
-  <p>분석하고 싶은 시를 선택하세요.</p>
-  <select id="poemSelect" onchange="showPoem()">
-    <option value="">시를 선택하세요</option>
-  </select>
+  <h2>📚 시 선택하기</h2>
+  <select id="poemSelect" onchange="showPoem()"></select>
 </section>
 
+<div class="grid">
+
 <section class="card">
-  <h2 id="poemTitle">📜 시 감상</h2>
-  <p id="poemAuthor"></p>
-  <div class="poem" id="poemText">
-    시를 선택하면 이곳에 본문이 나타납니다.
-  </div>
+  <h2 id="title">📖 시 감상</h2>
+  <p id="author"></p>
+  <div class="poem" id="poemText"></div>
 </section>
 
 <section class="card">
   <h2>💗 감정 분석 결과</h2>
-  <p>시에서 발견된 감정 단어를 분석합니다.</p>
-  <div id="emotionChart">
-    시를 선택하면 감정 그래프가 나타납니다.
-  </div>
-  <div id="dominantEmotion" class="result"></div>
+  <div id="chart"></div>
+  <h3 id="dominant"></h3>
+  <p id="theme"></p>
+  <p id="interpretation"></p>
 </section>
+
+</div>
 
 <section class="card">
   <h2>📊 행별 감정 분석</h2>
-  <div id="lineAnalysis">
-    시를 선택하면 각 행의 감정이 나타납니다.
-  </div>
+  <div id="lines"></div>
 </section>
 
 <section class="card">
-  <h2>✍️ 나만의 시 분석하기</h2>
-  <p>직접 작성한 시를 입력해 보세요.</p>
-  <textarea id="myPoem" rows="7"
-    placeholder="여기에 시를 입력하세요."></textarea>
-  <button onclick="analyzeMyPoem()">감정 분석하기</button>
-  <div id="myResult"></div>
+  <h2>💕 비슷한 감정의 시 추천</h2>
+  <div id="recommend"></div>
+</section>
+
+<section class="card">
+  <h2>📈 전체 시 감정 비교</h2>
+  <div class="table-wrap" id="comparison"></div>
+</section>
+
+<section class="card">
+  <h2>✍️ 직접 입력한 시 분석하기</h2>
+  <textarea id="customText" rows="6"
+    placeholder="분석하고 싶은 시를 입력하세요."></textarea>
+  <button onclick="analyzeCustom()">감정 분석하기</button>
+  <div id="customResult"></div>
 </section>
 
 <section class="card">
   <h2>🔍 감정 분석 방법</h2>
   <p>
-    이 웹사이트는 감정 사전을 이용하여
-    시에 등장하는 감정 단어를 탐색합니다.
+    감정 사전에 등록된 단어를 찾아
+    8가지 감정의 등장 횟수를 계산합니다.
   </p>
   <p>
-    감정별로 발견된 단어의 수를 계산하고,
-    전체 감정 단어 수에 대한 비율을 표시합니다.
+    전체 감정 단어 중 각 감정이 차지하는 비율을
+    백분율로 나타냅니다.
   </p>
   <p>
-    단어 기반 분석은 반어법이나 문맥을
+    단어 기반 분석은 반어법, 은유, 문맥을
     완벽하게 이해하지 못한다는 한계가 있습니다.
   </p>
 </section>
@@ -199,266 +195,353 @@ footer {
 
 <footer>
   <p>🌸 시의 마음을 읽다</p>
-  <p>감성컴퓨팅 | 한국 시 감정 분석 웹앱</p>
+  <p>감성컴퓨팅 | 한국 시 감정 분석 프로젝트</p>
 </footer>
 
 <script>
 
-// 감정 범주
-const emotions = [
+// 1. 감정 범주 및 감정 사전
+const EMOS = [
   {
-    name: "사랑",
-    color: "#ed8eaa",
-    words: ["사랑", "그대", "연인", "애정", "다정",
-            "포옹", "입맞춤", "연모", "소중", "정든"]
+    k:"love", name:"사랑", color:"#e58da7",
+    def:"상대방을 아끼고 소중하게 여기는 마음",
+    words:["사랑","그대","연인","애정","다정",
+           "포옹","입맞춤","연모","소중","정든"]
   },
   {
-    name: "슬픔",
-    color: "#779ed6",
-    words: ["슬픔", "눈물", "울음", "이별", "서러움",
-            "비애", "통곡", "상실", "비통", "설움"]
+    k:"sad", name:"슬픔", color:"#739bd3",
+    def:"상실이나 고통으로 인해 느끼는 감정",
+    words:["슬픔","눈물","울음","이별","서러움",
+           "비애","통곡","상실","비통","설움"]
   },
   {
-    name: "그리움",
-    color: "#a18bd5",
-    words: ["그리움", "그립", "보고 싶", "기다림", "추억",
-            "옛날", "고향", "그때", "회상", "그리워"]
+    k:"longing", name:"그리움", color:"#a18ad1",
+    def:"떨어져 있는 대상을 보고 싶어 하는 마음",
+    words:["그리움","그립","보고 싶","기다림","추억",
+           "옛날","고향","그때","회상","그리워"]
   },
   {
-    name: "기쁨",
-    color: "#f0bf68",
-    words: ["기쁨", "행복", "웃음", "즐거움", "환희",
-            "반가움", "축복", "미소", "신남", "기뻐"]
+    k:"joy", name:"기쁨", color:"#e9b85e",
+    def:"즐겁고 행복한 상태에서 느끼는 감정",
+    words:["기쁨","행복","웃음","즐거움","환희",
+           "반가움","축복","미소","신남","기뻐"]
   },
   {
-    name: "분노",
-    color: "#df7979",
-    words: ["분노", "화가", "증오", "원망", "미움",
-            "억울", "격분", "저항", "분개", "원한"]
+    k:"anger", name:"분노", color:"#d97979",
+    def:"부당한 상황에 대한 화와 저항의 감정",
+    words:["분노","화가","증오","원망","미움",
+           "억울","격분","저항","분개","원한"]
   },
   {
-    name: "희망",
-    color: "#83c7a4",
-    words: ["희망", "꿈", "미래", "새벽", "소망",
-            "기대", "내일", "새로운", "빛나다", "도약"]
+    k:"hope", name:"희망", color:"#77bfa0",
+    def:"미래가 좋아질 것이라는 기대와 소망",
+    words:["희망","꿈","미래","새벽","소망",
+           "기대","내일","새로운","빛나다","도약"]
   },
   {
-    name: "두려움",
-    color: "#9b9fae",
-    words: ["두려움", "공포", "불안", "무서움", "떨림",
-            "걱정", "위험", "절망", "어둠", "겁"]
+    k:"fear", name:"두려움", color:"#969bad",
+    def:"위험과 불확실성에서 느끼는 불안",
+    words:["두려움","공포","불안","무서움","떨림",
+           "걱정","위험","절망","어둠","겁"]
   },
   {
-    name: "평온",
-    color: "#7bbdbb",
-    words: ["평온", "고요", "평화", "안식", "편안",
-            "잔잔", "조용", "휴식", "온화", "안정"]
+    k:"peace", name:"평온", color:"#74b9b5",
+    def:"마음이 안정되고 고요한 상태",
+    words:["평온","고요","평화","안식","편안",
+           "잔잔","조용","휴식","온화","안정"]
   }
 ];
 
-// 아래는 기능 테스트용 창작 문장입니다.
-// 실제 시 원문이 아니며 제출 전 교체해야 합니다.
-const poems = [
+// 2. 시 데이터
+// 아래 데이터는 프로그램 테스트용 창작 문장입니다.
+// 실제 한국 시 15편으로 교체해야 합니다.
+
+const POEMS = [
   {
-    title: "감정 분석 테스트",
-    author: "기능 확인용 예시",
-    text: `그리운 고향을 생각하며
+    id:"test1",
+    title:"감정 분석 테스트 1",
+    poet:"테스트용",
+    year:"-",
+    text:`그리운 고향을 생각하며
 눈물 속에 추억을 떠올린다
 새벽의 희망을 기다리며
 고요한 마음으로 내일을 꿈꾼다`,
-    theme: "그리움과 희망",
-    interpretation: "화자는 고향을 그리워하고 있습니다. 과거의 추억을 떠올리면서 슬픔을 느낍니다. 그러나 새로운 내일에 대한 희망도 품고 있습니다."
+    theme:"그리움과 희망",
+    interp:"화자는 고향을 그리워하고 있습니다. 과거의 추억을 떠올리면서 슬픔을 느낍니다. 그러나 새로운 내일에 대한 희망도 품고 있습니다."
+  },
+  {
+    id:"test2",
+    title:"감정 분석 테스트 2",
+    poet:"테스트용",
+    year:"-",
+    text:`사랑하는 그대를 기다리며
+그리움 속에서 눈물을 흘린다
+다정한 추억을 생각하며
+새로운 희망을 꿈꾼다`,
+    theme:"사랑과 기다림",
+    interp:"화자는 사랑하는 대상을 기다리고 있습니다. 그리움과 슬픔이 함께 나타납니다. 마지막에는 희망을 통해 긍정적인 태도를 드러냅니다."
+  },
+  {
+    id:"test3",
+    title:"감정 분석 테스트 3",
+    poet:"테스트용",
+    year:"-",
+    text:`고요한 새벽이 찾아오고
+평온한 마음에 미소가 번진다
+새로운 미래를 꿈꾸며
+행복한 내일을 기대한다`,
+    theme:"평온과 미래에 대한 기대",
+    interp:"화자는 고요한 분위기에서 안정감을 느낍니다. 미래에 대한 기대가 나타납니다. 전체적으로 희망적인 정서가 강조됩니다."
   }
 ];
 
-// 감정 분석 함수
+// 3. 감정 분석
 function analyze(text) {
-  const counts = emotions.map(() => 0);
-
-  // 긴 단어부터 검사하고 겹친 부분은 중복 계산하지 않음
+  const counts = EMOS.map(() => 0);
   const matches = [];
 
-  emotions.forEach((emotion, index) => {
-    emotion.words.forEach(word => {
-      let start = 0;
-      let pos;
-
-      while ((pos = text.indexOf(word, start)) !== -1) {
+  EMOS.forEach((emo, i) => {
+    emo.words.forEach(word => {
+      let pos = 0;
+      while ((pos = text.indexOf(word, pos)) !== -1) {
         matches.push({
-          start: pos,
-          end: pos + word.length,
-          index: index,
-          word: word
+          start:pos,
+          end:pos + word.length,
+          index:i,
+          word:word
         });
-        start = pos + word.length;
+        pos += word.length;
       }
     });
   });
 
-  matches.sort((a, b) =>
-    b.word.length - a.word.length || a.start - b.start
+  matches.sort((a,b) =>
+    (b.end-b.start)-(a.end-a.start) ||
+    a.start-b.start
   );
 
   const used = new Set();
 
-  matches.forEach(match => {
+  matches.forEach(m => {
     let overlap = false;
 
-    for (let i = match.start; i < match.end; i++) {
-      if (used.has(i)) {
-        overlap = true;
-        break;
-      }
+    for(let j=m.start;j<m.end;j++) {
+      if(used.has(j)) overlap=true;
     }
 
-    if (!overlap) {
-      counts[match.index]++;
+    if(!overlap) {
+      counts[m.index]++;
 
-      for (let i = match.start; i < match.end; i++) {
-        used.add(i);
+      for(let j=m.start;j<m.end;j++) {
+        used.add(j);
       }
     }
   });
 
-  const total = counts.reduce((a, b) => a + b, 0);
+  const total = counts.reduce((a,b)=>a+b,0);
 
-  const percentages = counts.map(count =>
-    total === 0 ? 0 : count / total * 100
+  const vec = counts.map(c =>
+    total ? c/total : 0
   );
 
-  return { counts, percentages, total };
+  return {counts,total,vec};
 }
 
-// 감정 그래프 생성
-function createChart(result) {
-  if (result.total === 0) {
+// 4. 감정 그래프
+function chartHTML(result) {
+  if(!result.total) {
     return "<p>감지된 감정 단어가 없습니다.</p>";
   }
 
-  return emotions.map((emotion, index) => {
-    const percent = result.percentages[index];
-
-    return `
-      <div class="emotion">
-        <strong>${emotion.name} ${percent.toFixed(1)}%</strong>
-        <div class="bar">
-          <div class="fill"
-            style="width:${percent}%;
-            background:${emotion.color}">
-          </div>
+  return EMOS.map((emo,i)=>`
+    <div>
+      <strong>${emo.name} ${(result.vec[i]*100).toFixed(1)}%</strong>
+      <div class="bar">
+        <div class="fill"
+          style="width:${result.vec[i]*100}%;
+          background:${emo.color}">
         </div>
       </div>
-    `;
-  }).join("");
+    </div>
+  `).join("");
 }
 
-// 시 선택 목록 생성
-function initialize() {
-  const select = document.getElementById("poemSelect");
+// 5. 시 목록
+function init() {
+  const select=document.getElementById("poemSelect");
 
-  poems.forEach((poem, index) => {
-    const option = document.createElement("option");
-    option.value = index;
-    option.textContent = poem.title + " - " + poem.author;
+  POEMS.forEach((p,i)=>{
+    const option=document.createElement("option");
+    option.value=i;
+    option.textContent=p.title+" - "+p.poet;
     select.appendChild(option);
   });
+
+  showPoem();
 }
 
-// 시 표시
+// 6. 선택한 시 표시
 function showPoem() {
-  const value = document.getElementById("poemSelect").value;
+  const index=Number(
+    document.getElementById("poemSelect").value
+  );
 
-  if (value === "") return;
+  const p=POEMS[index];
+  const r=analyze(p.text);
 
-  const poem = poems[Number(value)];
+  document.getElementById("title").textContent=p.title;
+  document.getElementById("author").textContent=
+    p.poet+" | "+p.year;
 
-  document.getElementById("poemTitle").textContent =
-    "📜 " + poem.title;
+  document.getElementById("poemText").textContent=p.text;
+  document.getElementById("chart").innerHTML=chartHTML(r);
 
-  document.getElementById("poemAuthor").textContent =
-    "시인: " + poem.author;
+  if(r.total) {
+    const max=Math.max(...r.vec);
+    const i=r.vec.indexOf(max);
 
-  document.getElementById("poemText").textContent =
-    poem.text;
-
-  const result = analyze(poem.text);
-
-  document.getElementById("emotionChart").innerHTML =
-    createChart(result);
-
-  showDominant(result, poem);
-  showLines(poem.text);
-}
-
-// 지배 정서 표시
-function showDominant(result, poem) {
-  const element = document.getElementById("dominantEmotion");
-
-  if (result.total === 0) {
-    element.textContent = "분석 가능한 감정 단어가 없습니다.";
-    return;
+    document.getElementById("dominant").textContent=
+      "지배 정서: "+EMOS[i].name+
+      " ("+(max*100).toFixed(1)+"%)";
+  } else {
+    document.getElementById("dominant").textContent=
+      "감지된 감정 없음";
   }
 
-  const max = Math.max(...result.percentages);
-  const index = result.percentages.indexOf(max);
+  document.getElementById("theme").textContent=
+    "주제: "+p.theme;
 
-  element.textContent =
-    "💗 지배 정서: " + emotions[index].name +
-    " (" + max.toFixed(1) + "%)\n" +
-    "주제: " + poem.theme + "\n" +
-    "해석: " + poem.interpretation;
+  document.getElementById("interpretation").textContent=
+    "해석: "+p.interp;
 
-  element.style.whiteSpace = "pre-line";
+  showLines(p.text);
+  showRecommendations(index);
+  showComparison();
 }
 
-// 행별 분석
+// 7. 행별 감정
 function showLines(text) {
-  const lines = text.split("\n").filter(line => line.trim());
-  const container = document.getElementById("lineAnalysis");
+  const box=document.getElementById("lines");
+  box.replaceChildren();
 
-  container.replaceChildren();
+  text.split("\n").filter(x=>x.trim()).forEach((line,i)=>{
+    const r=analyze(line);
+    const div=document.createElement("div");
+    div.className="line";
 
-  lines.forEach((line, index) => {
-    const result = analyze(line);
-    const div = document.createElement("div");
-    div.className = "line-result";
+    const names=EMOS
+      .filter((e,j)=>r.counts[j]>0)
+      .map(e=>e.name);
 
-    const title = document.createElement("strong");
-    title.textContent = (index + 1) + "행: " + line;
+    div.textContent=
+      (i+1)+"행 | "+line+" → "+
+      (names.length?names.join(", "):"감지 없음");
 
-    const detail = document.createElement("p");
-
-    const detected = emotions
-      .filter((emotion, i) => result.counts[i] > 0)
-      .map(emotion => emotion.name);
-
-    detail.textContent = detected.length
-      ? "감지된 감정: " + detected.join(", ")
-      : "감지된 감정 없음";
-
-    div.appendChild(title);
-    div.appendChild(detail);
-    container.appendChild(div);
+    box.appendChild(div);
   });
 }
 
-// 직접 입력한 시 분석
-function analyzeMyPoem() {
-  const text = document.getElementById("myPoem").value.trim();
-  const resultBox = document.getElementById("myResult");
+// 8. 코사인 유사도
+function similarity(a,b) {
+  let dot=0,na=0,nb=0;
 
-  if (!text) {
-    resultBox.textContent = "먼저 시를 입력해 주세요.";
+  for(let i=0;i<a.length;i++) {
+    dot+=a[i]*b[i];
+    na+=a[i]*a[i];
+    nb+=b[i]*b[i];
+  }
+
+  if(!na||!nb) return 0;
+
+  return dot/(Math.sqrt(na)*Math.sqrt(nb));
+}
+
+// 9. 비슷한 시 추천
+function showRecommendations(index) {
+  const current=analyze(POEMS[index].text).vec;
+
+  const ranked=POEMS.map((p,i)=>({
+    index:i,
+    score:similarity(current,analyze(p.text).vec)
+  }))
+  .filter(x=>x.index!==index)
+  .sort((a,b)=>b.score-a.score)
+  .slice(0,3);
+
+  const box=document.getElementById("recommend");
+  box.replaceChildren();
+
+  ranked.forEach(item=>{
+    const button=document.createElement("button");
+
+    button.textContent=
+      POEMS[item.index].title+
+      " | 유사도 "+(item.score*100).toFixed(1)+"%";
+
+    button.onclick=()=>{
+      document.getElementById("poemSelect").value=item.index;
+      showPoem();
+      window.scrollTo({top:0,behavior:"smooth"});
+    };
+
+    box.appendChild(button);
+  });
+}
+
+// 10. 전체 비교표
+function showComparison() {
+  const box=document.getElementById("comparison");
+  box.replaceChildren();
+
+  const table=document.createElement("table");
+  const head=document.createElement("tr");
+
+  ["시 제목",...EMOS.map(e=>e.name)].forEach(name=>{
+    const th=document.createElement("th");
+    th.textContent=name;
+    head.appendChild(th);
+  });
+
+  table.appendChild(head);
+
+  POEMS.forEach(p=>{
+    const r=analyze(p.text);
+    const row=document.createElement("tr");
+
+    const title=document.createElement("td");
+    title.textContent=p.title;
+    row.appendChild(title);
+
+    r.vec.forEach((v,i)=>{
+      const td=document.createElement("td");
+      td.textContent=(v*100).toFixed(0)+"%";
+      td.style.backgroundColor=EMOS[i].color;
+      td.style.opacity= v>0 ? "0.85":"0.45";
+      row.appendChild(td);
+    });
+
+    table.appendChild(row);
+  });
+
+  box.appendChild(table);
+}
+
+// 11. 직접 입력한 시 분석
+function analyzeCustom() {
+  const text=document.getElementById("customText").value.trim();
+  const box=document.getElementById("customResult");
+
+  if(!text) {
+    box.textContent="먼저 시를 입력해 주세요.";
     return;
   }
 
-  const result = analyze(text);
+  const result=analyze(text);
 
-  resultBox.innerHTML =
-    "<h3>분석 결과</h3>" + createChart(result);
+  box.innerHTML="<h3>분석 결과</h3>"+chartHTML(result);
 }
 
-initialize();
+init();
 
 </script>
 </body>
