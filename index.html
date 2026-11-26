@@ -788,12 +788,16 @@ function analyze(text) {
 // =======================================
 
 function dominant(result) {
-  if (!result.total) return "감정 단어 미감지";
+  if (!result.total) {
+    return "감정 단어 미감지";
+  }
 
   const max = Math.max(...result.counts);
-  const index = result.counts.indexOf(max);
 
-  return EMOS[index].name;
+  return EMOS
+    .filter((emotion, i) => result.counts[i] === max)
+    .map(emotion => emotion.name)
+    .join(" · ");
 }
 
 // =======================================
