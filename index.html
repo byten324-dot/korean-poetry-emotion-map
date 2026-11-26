@@ -826,13 +826,7 @@ function highlightText(text, result) {
 
     const emotion = EMOS[hit.emotionIndex];
 
-    html += `
-      <mark
-        style="background:${emotion.color}66"
-        title="${emotion.name}">
-        ${escapeHTML(text.slice(hit.start, hit.end))}
-      </mark>
-    `;
+    html += `<mark style="background:${emotion.color}66" title="${emotion.name}">${escapeHTML(text.slice(hit.start, hit.end))}</mark>`;
 
     position = hit.end;
   });
