@@ -77,7 +77,8 @@ header h1{font-size:29px}
 
 <section class="card">
 <h2>💗 감정 분석 결과</h2>
-<div id="bars"></div>
+<h3>감정 프로필 레이더 차트</h3>
+<div id="radar" style="width:100%; max-width:440px; margin:20px auto;"></div>
 <h3 id="dominant"></h3>
 <p id="theme"></p>
 <p id="interpretation"></p>
@@ -828,6 +829,102 @@ function drawBars(result) {
 // =======================================
 // 7. 감정 단어 색상 강조
 // =======================================
+function drawRadar(result) {
+  const cx = 200;
+  const cy = 200;
+  const radius = 120;
+  const n = EMOS.length;
+
+  function point(i, value) {
+    const angle = -Math.PI / 2 + i * 2 * Math.PI / n;
+
+    return [
+      cx + Math.cos(angle) * radius * value,
+      cy + Math.sin(angle) * radius * value
+    ];
+  }
+
+  let svg = `
+    <svg viewBox="0 0 400 400"
+         style="width:100%;height:auto;"
+         role="img"
+         aria-label="8가지 감정 비율 레이더 차트">
+  `;
+
+  // 25%, 50%, 75%, 100% 눈금
+  [0.25, 0.5, 0.75, 1].forEach(level => {
+    const points = EMOS.map((e, i) =>
+      point(i, level).join(",")
+    ).join(" ");
+
+    svg += `
+      <polygon points="${points}"
+        fill="none"
+        stroke="#cbd5e1"
+        stroke-width="1"/>
+      <text x="${cx + 5}"
+        y="${cy - radius * level + 12}"
+        font-size="10"
+        fill="#64748b">
+        ${level * 100}%
+      </text>
+    `;
+  });
+
+  // 감정별 축과 이름
+  EMOS.forEach((emotion, i) => {
+    const [x, y] = point(i, 1);
+    const [lx, ly] = point(i, 1.35);
+
+    svg += `
+      <line x1="${cx}" y1="${cy}"
+        x2="${x}" y2="${y}"
+        stroke="#cbd5e1"/>
+
+      <text x="${lx}" y="${ly}"
+        text-anchor="middle"
+        dominant-baseline="middle"
+        font-size="12"
+        font-weight="bold"
+        fill="${emotion.color}">
+        ${emotion.name}
+      </text>
+    `;
+  });
+
+  // 실제 감정 분석 결과
+  const dataPoints = result.vec.map((value, i) =>
+    point(i, value).join(",")
+  ).join(" ");
+
+  svg += `
+    <polygon points="${dataPoints}"
+      fill="#a38bd2"
+      fill-opacity="0.3"
+      stroke="#8b5cf6"
+      stroke-width="2"/>
+  `;
+
+  result.vec.forEach((value, i) => {
+    const [x, y] = point(i, value);
+
+    svg += `
+      <circle cx="${x}" cy="${y}"
+        r="4" fill="${EMOS[i].color}">
+        <title>
+          ${EMOS[i].name}: ${(value * 100).toFixed(1)}%
+        </title>
+      </circle>
+    `;
+  });
+
+  svg += "</svg>";
+
+  $("radar").innerHTML = svg +
+    (result.total
+      ? ""
+      : '<p class="notice">감지된 감정 단어가 없습니다.</p>');
+}
 
 function highlightText(text, result) {
   let html = "";
@@ -904,6 +1001,8 @@ function render() {
   $("source").appendChild(sourceLink);
 
   $("bars").innerHTML = drawBars(result);
+
+  drawRadar(result);
 
   const maxPercent = Math.max(...result.vec) * 100;
 
