@@ -1128,11 +1128,15 @@ $("dominant").textContent = result.total
     index: i,
     score: cosine(result.vec, analyze(other.text).vec)
   }))
-  .filter(item => item.index !== index)
+  .filter(item => item.index !== index && item.score > 0)
   .sort((a, b) => b.score - a.score)
   .slice(0, 3);
 
   $("recommendations").replaceChildren();
+  if (recommendations.length === 0) {
+  $("recommendations").textContent =
+    "감정 분석 결과가 부족하여 유사한 작품을 추천할 수 없습니다.";
+}
 
   recommendations.forEach(item => {
     const button = document.createElement("button");
