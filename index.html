@@ -1057,19 +1057,9 @@ $("dominant").textContent = result.total
     ...flowResults.map(r => r.total)
   );
 
-  const flowLegend = EMOS.map(emotion => `
-    <span style="display:inline-flex;align-items:center;gap:5px;margin:5px;">
-      <i style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${emotion.color};"></i>
-      ${emotion.name}
-    </span>
-  `).join("");
-
   $("flow").innerHTML = `
     <p class="meta">행별 감정 단어 감지 횟수 (단위: 회)</p>
 
-    <div style="display:flex;flex-wrap:wrap;margin-bottom:15px;">
-      ${flowLegend}
-    </div>
 
     <div style="display:flex;justify-content:space-between;margin:10px 0;" class="meta">
       <span>0회</span>
