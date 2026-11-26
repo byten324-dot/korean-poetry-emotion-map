@@ -1049,20 +1049,48 @@ $("dominant").textContent = result.total
   }).join("");
 
   // 행별 감정 흐름
-  $("flow").innerHTML = lines.map((line, lineIndex) => {
+  const flowResults = lines.map(line => analyze(line));
+
+  const maxLineCount = Math.max(
+    1,
+    ...flowResults.map(r => r.total)
+  );
+
+  const flowLegend = EMOS.map(emotion => `
+    <span style="display:inline-flex;align-items:center;gap:5px;margin:5px;">
+      <i style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${emotion.color};"></i>
+      ${emotion.name}
+    </span>
+  `).join("");
+
+  $("flow").innerHTML = `
+    <p class="meta">행별 감정 단어 감지 횟수 (단위: 회)</p>
+
+    <div style="display:flex;flex-wrap:wrap;margin-bottom:15px;">
+      ${flowLegend}
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin:10px 0;" class="meta">
+      <span>0회</span>
+      <span>최대 ${maxLineCount}회</span>
+    </div>
+  ` + lines.map((line, lineIndex) => {
     if (!line.trim()) return "";
 
-    const lineResult = analyze(line);
+    const lineResult = flowResults[lineIndex];
 
     const segments = EMOS.map((emotion, i) => {
-      if (!lineResult.counts[i]) return "";
+      const count = lineResult.counts[i];
+
+      if (!count) return "";
 
       return `
         <div
-          title="${emotion.name}"
+          title="${emotion.name}: ${count}회"
           style="
-            width:${lineResult.vec[i] * 100}%;
+            width:${count / maxLineCount * 100}%;
             background:${emotion.color};
+            height:100%;
           ">
         </div>
       `;
@@ -1071,10 +1099,16 @@ $("dominant").textContent = result.total
     return `
       <div class="flowrow">
         <span>${lineIndex + 1}행</span>
-        <div class="track">${segments}</div>
+        <div class="track" style="display:flex;">
+          ${segments}
+        </div>
+        <span class="meta">
+          ${lineResult.total}회
+        </span>
       </div>
     `;
   }).join("");
+
 
   // 단어 → 감정 → 주제
   const words = [
