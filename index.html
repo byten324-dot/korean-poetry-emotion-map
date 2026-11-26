@@ -13,7 +13,7 @@ header h1{font-size:38px;margin:0}
 header p{color:#f0e9f8}
 main{max-width:1200px;margin:25px auto;padding:0 16px}
 .card{background:white;border-radius:18px;padding:25px;margin-bottom:20px;box-shadow:0 6px 24px #30274410}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
 h2{font-size:21px;color:#705194;margin-top:0}
 h3{color:#584477}
 select,textarea,button{width:100%;padding:13px;border-radius:10px;border:1px solid #ddd;font:inherit}
@@ -43,7 +43,7 @@ td:first-child{text-align:left;white-space:nowrap}
 footer{text-align:center;color:#888;padding:35px}
 a{color:#705194}
 @media(max-width:700px){
-.grid{grid-template-columns:1fr}
+.grid{grid-template-columns:minmax(0,1fr)}
 .card{padding:18px}
 header h1{font-size:29px}
 }
@@ -112,7 +112,7 @@ header h1{font-size:29px}
 
 <section class="card">
 <h2>💕 비슷한 감정의 시 3편</h2>
-<p class="meta">감정 비율을 비교하는 코사인 유사도 방식입니다.</p>
+<p class="meta">감정 비율을 비교하는 코사인 유사도 방식입니다. 0%는 공통 감정이 없음을 뜻하며, 미감지 작품은 비교에서 제외합니다.</p>
 <div id="recommendations"></div>
 </section>
 
@@ -120,7 +120,7 @@ header h1{font-size:29px}
 
 <section class="card">
 <h2>🎨 전체 시 감정 비교 히트맵</h2>
-<p class="meta">색이 진할수록 해당 감정의 비율이 높습니다.</p>
+<p class="meta">색이 진할수록 해당 감정의 비율이 높습니다. —는 감정 단어 미감지를 뜻합니다.</p>
 <div class="tablewrap" id="heatmap"></div>
 </section>
 
@@ -195,57 +195,57 @@ const EMOS = [
     k:"love",
     name:"사랑",
     color:"#e989a7",
-    definition:"다른 존재를 소중히 여기고 아끼며 정서적 유대감을 느끼는 감정이다.",
+    def:"다른 존재를 소중히 여기고 아끼며 정서적 유대감을 느끼는 감정이다.",
     words:["사랑","애정","연인","다정","소중","연모","포옹","입맞춤","정든","애틋","아끼","사모","사랑하"]
   },
   {
     k:"sadness",
     name:"슬픔",
     color:"#6f91c9",
-    definition:"상실이나 이별, 고통으로 마음이 아프고 괴로운 감정이다.",
+    def:"상실이나 이별, 고통으로 마음이 아프고 괴로운 감정이다.",
     words:["슬픔","슬픈","슬피","눈물","울음","울다","웁니다","이별","설움","서럽","괴로","상실","비통","가엾","슬퍼","울고"]
   },
   {
     k:"longing",
     name:"그리움",
     color:"#a38bd2",
-    definition:"멀리 있거나 사라진 대상과 지나간 시간을 다시 만나고 싶은 감정이다.",
+    def:"멀리 있거나 사라진 대상과 지나간 시간을 다시 만나고 싶은 감정이다.",
     words:["그리움","그리워","그립","그리다가","추억","追憶","고향","기다리","못잊","잊지","보고싶","보고 싶","그리운","향수","회상"]
   },
   {
     k:"hope",
     name:"희망",
     color:"#6cb59c",
-    definition:"현재의 어려움을 넘어 더 나은 미래가 오기를 기대하는 감정이다.",
-    words:["희망","希望","소망","새벽","내일","來日","새로운","기대","꿈꾸","바라다","바라며","극복","용기","다짐","믿음"]
+    def:"현재의 어려움을 넘어 더 나은 미래가 오기를 기대하는 감정이다.",
+    words:["희망","希望","소망","살자","새벽","내일","來日","새로운","기대","꿈꾸","바라다","바라며","극복","용기","다짐","믿음"]
   },
   {
     k:"peace",
     name:"평온",
     color:"#70b9b9",
-    definition:"불안이나 갈등에서 벗어나 마음이 차분하고 안정된 상태이다.",
+    def:"불안이나 갈등에서 벗어나 마음이 차분하고 안정된 상태이다.",
     words:["고요","평온","평화","조용","잔잔","안식","편안","차분","가만히","온화","평안","안온","평화롭","고즈넉"]
   },
   {
     k:"joy",
     name:"기쁨",
     color:"#e6b35e",
-    definition:"즐겁고 행복한 경험이나 만족스러운 상황에서 느끼는 밝은 감정이다.",
+    def:"즐겁고 행복한 경험이나 만족스러운 상황에서 느끼는 밝은 감정이다.",
     words:["기쁨","행복","웃음","웃으며","웃는다","미소","즐거","반갑","환희","기뻐","기쁜","좋아","즐겁","흐뭇","신나"]
   },
   {
     k:"anger",
     name:"분노",
     color:"#d37d7d",
-    definition:"부당하거나 불쾌한 상황에 대해 반발하고 저항하려는 감정이다.",
+    def:"부당하거나 불쾌한 상황에 대해 반발하고 저항하려는 감정이다.",
     words:["분노","원망","미워","미움","증오","저항","억울","원한","시샘","시새움","짓밟","격분","분개","성내","노여움"]
   },
   {
     k:"fear",
     name:"두려움",
     color:"#8793a8",
-    definition:"위험이나 불확실한 상황으로 인해 느끼는 공포와 불안의 감정이다.",
-    words:["두려움","공포","불안","걱정","무섭","두렵","떨리","겁먹","위험","무서워","두려워","초조","섬뜩","겁나","공포감"]
+    def:"위험이나 불확실한 상황으로 인해 느끼는 공포와 불안의 감정이다.",
+    words:["두려움","공포","불안","갈 길은 하나 없","걱정","무섭","두렵","떨리","겁먹","위험","무서워","두려워","초조","섬뜩","겁나","공포감"]
   }
 ];
 
@@ -256,11 +256,12 @@ const EMOS = [
 const POEMS = [
 
 {
+id:"prologue",
 title:"서시",
 poet:"윤동주",
-death:1945,
-year:1941,
-yearNote:"1941년 작성, 1948년 시집 수록",
+poetDeath:1945,
+year:"1948",
+yearNote:"1941년 11월 20일 작성, 1948년 시집 수록",
 source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/서시",
 text:`죽는 날까지 하늘을 우르러
 한점 부끄럼이 없기를,
@@ -277,11 +278,12 @@ interp:"화자는 부끄럼 없는 삶을 다짐한다. 괴로움은 도덕적 �
 },
 
 {
+id:"stars",
 title:"별 헤는 밤",
 poet:"윤동주",
-death:1945,
-year:1941,
-yearNote:"1941년 작성, 1948년 시집 수록",
+poetDeath:1945,
+year:"1948",
+yearNote:"1941년 11월 5일 작성, 1948년 시집 수록",
 source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/별_헤는_밤",
 text:`季節이 지나가는 하늘에는
 가을로 가득 차있읍니다.
@@ -327,10 +329,11 @@ interp:"별을 세는 행위는 기억을 되살리는 과정이다. 멀리 있�
 },
 
 {
+id:"selfportrait",
 title:"자화상",
 poet:"윤동주",
-death:1945,
-year:1939,
+poetDeath:1945,
+year:"1948",
 yearNote:"1939년 작성, 1948년 시집 수록",
 source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/자화상",
 text:`산모퉁이를 돌아 논가 외딴우물을 홀로 찾어가선 가만히 들여다봅니다.
@@ -353,11 +356,12 @@ interp:"우물은 자신을 비추는 성찰의 공간이다. 미움과 연민�
 },
 
 {
+id:"new-road",
 title:"새로운 길",
 poet:"윤동주",
-death:1945,
-year:1938,
-yearNote:"1938년 작성, 1948년 시집 수록",
+poetDeath:1945,
+year:"1948",
+yearNote:"1938년 5월 10일 작성, 1948년 시집 수록",
 source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/새로운_길",
 text:`내를 건너서 숲으로
 고개를 넘어서 마을로
@@ -378,11 +382,12 @@ interp:"반복되는 길은 일상과 지속성을 상징한다. 같은 길을 �
 },
 
 {
+id:"easy-poem",
 title:"쉽게 씨워진 시",
 poet:"윤동주",
-death:1945,
-year:1942,
-yearNote:"1942년 작성, 1948년 시집 수록",
+poetDeath:1945,
+year:"1947",
+yearNote:"1942년 6월 3일 작성, 1947년 경향신문 발표로 조사됨, 1948년 시집 수록",
 source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/쉽게_씨워진_시",
 text:`窓밖에 밤비가 속살거려
 六疊房은 남의 나라,
@@ -419,11 +424,12 @@ interp:"화자는 타국에서 시를 쓰는 자신의 처지를 성찰한다. �
 },
 
 {
+id:"azalea",
 title:"진달래꽃",
 poet:"김소월",
-death:1934,
-year:1925,
-yearNote:"1925년 시집 수록",
+poetDeath:1934,
+year:"1922",
+yearNote:"1922년 개벽 발표, 1925년 시집 수록",
 source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/진달래꽃",
 text:`나 보기가 역겨워
 가실 때에는
@@ -445,11 +451,12 @@ interp:"화자는 사랑하는 사람과의 이별을 받아들이는 듯 말한
 },
 
 {
+id:"invocation",
 title:"초혼",
 poet:"김소월",
-death:1934,
-year:1925,
-yearNote:"1925년 시집 수록",
+poetDeath:1934,
+year:"1925",
+yearNote:"1925년 진달래꽃 시집 수록",
 source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/초혼",
 text:`산산이 부서진 이름이어!
 허공중(虛空中)에 헤어진 이름이어!
@@ -480,11 +487,12 @@ interp:"부재한 사람을 부르는 행위가 반복된다. 되돌아오지 �
 },
 
 {
+id:"mountain-flower",
 title:"산유화",
 poet:"김소월",
-death:1934,
-year:1925,
-yearNote:"1925년 시집 수록",
+poetDeath:1934,
+year:"1924",
+yearNote:"1924년 영대 발표로 조사됨, 1925년 시집 수록",
 source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/산유화",
 text:`산에는 꽃 피네
 꽃이 피네
@@ -510,11 +518,12 @@ interp:"꽃이 피고 지는 장면이 자연의 순환을 이룬다. 혼자 피
 },
 
 {
+id:"later",
 title:"먼 후일",
 poet:"김소월",
-death:1934,
-year:1925,
-yearNote:"1925년 시집 수록",
+poetDeath:1934,
+year:"1925",
+yearNote:"1925년 시집 수록, 최초 발표 연도 미확정",
 source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/먼_후일",
 text:`먼 훗날 당신이 찾으시면
 그때에 내 말이 '잊었노라'
@@ -532,11 +541,12 @@ interp:"잊었다는 말이 반복되지만 실제로는 잊지 못한다. 말�
 },
 
 {
+id:"mother",
 title:"엄마야 누나야",
 poet:"김소월",
-death:1934,
-year:1925,
-yearNote:"1925년 시집 수록",
+poetDeath:1934,
+year:"1922",
+yearNote:"1922년 개벽 발표로 조사됨, 1925년 시집 수록",
 source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/엄마야_누나야",
 text:`엄마야 누나야 강변 살자,
 뜰에는 반짝는 금모래빛,
@@ -547,11 +557,12 @@ interp:"강변은 화자가 바라는 삶의 공간이다. 금모래와 갈잎�
 },
 
 {
+id:"silence",
 title:"님의 침묵",
 poet:"한용운",
-death:1944,
-year:1926,
-yearNote:"1926년 시집 수록, 현대어 표기",
+poetDeath:1944,
+year:"1926",
+yearNote:"1926년 님의 침묵 시집 수록, 현대어 표기",
 source:"https://ko.wikisource.org/wiki/님의_침묵/님의_침묵",
 text:`임은 갔습니다. 아아, 사랑하는 나의 임은 갔습니다.
 
@@ -575,11 +586,12 @@ interp:"이별은 분명하지만 화자는 관계가 끝났다고 보지 않는
 },
 
 {
+id:"ferry",
 title:"나룻배와 행인",
 poet:"한용운",
-death:1944,
-year:1926,
-yearNote:"1926년 시집 수록, 현대어 표기",
+poetDeath:1944,
+year:"1926",
+yearNote:"1926년 님의 침묵 시집 수록, 현대어 표기",
 source:"https://ko.wikisource.org/wiki/님의_침묵/나룻배와_행인",
 text:`나는 나룻배
 당신은 행인(行人)
@@ -604,11 +616,12 @@ interp:"나룻배와 행인의 관계는 비대칭적이다. 배는 상처를 �
 },
 
 {
+id:"belated",
 title:"예전엔 미처 몰랐어요",
 poet:"김소월",
-death:1934,
-year:1925,
-yearNote:"1925년 시집 수록",
+poetDeath:1934,
+year:"1923",
+yearNote:"1923년 발표로 조사됨, 1925년 시집 수록",
 source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/예전엔_미처_몰랐어요",
 text:`봄 가을없이 밤마다 돋는 달도
 '예전엔 미처 몰랐어요.'
@@ -626,11 +639,12 @@ interp:"달을 바라보며 자신의 감정을 새로 깨닫는다. 반복되�
 },
 
 {
+id:"road",
 title:"길",
 poet:"김소월",
-death:1934,
-year:1925,
-yearNote:"1925년 시집 수록",
+poetDeath:1934,
+year:"1925",
+yearNote:"1925년 시집 수록, 최초 발표 연도 미확정",
 source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/길",
 text:`어제도 하룻밤
 나그네 집에
@@ -664,11 +678,12 @@ interp:"길이 많지만 갈 길이 없다는 말은 막막함을 나타낸다. 
 },
 
 {
+id:"cuckoo",
 title:"접동새",
 poet:"김소월",
-death:1934,
-year:1925,
-yearNote:"1925년 시집 수록",
+poetDeath:1934,
+year:"1923",
+yearNote:"1923년 배재 발표로 조사됨, 1925년 시집 수록",
 source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/접동새",
 text:`접동
 접동
@@ -982,7 +997,7 @@ function render() {
 
   $("meta").textContent =
     poem.poet +
-    " · 시인 사망 " + poem.death + "년" +
+    " · 시인 사망 " + poem.poetDeath + "년" +
     " · " + poem.yearNote;
 
   $("poem").innerHTML = highlightText(poem.text, result);
@@ -990,13 +1005,13 @@ function render() {
   // 작품 출처 링크
   $("source").replaceChildren();
 
-  const sourceLabel = document.createTextNode("원문 출처: ");
+  const sourceLabel = document.createTextNode("원문 참고 출처: ");
   const sourceLink = document.createElement("a");
 
   sourceLink.href = poem.source;
   sourceLink.target = "_blank";
   sourceLink.rel = "noopener noreferrer";
-  sourceLink.textContent = "위키문헌 원문 보기 ↗";
+  sourceLink.textContent = "위키문헌 참고 자료 ↗";
 
   $("source").appendChild(sourceLabel);
   $("source").appendChild(sourceLink);
@@ -1020,7 +1035,7 @@ $("dominant").textContent = result.total
 
   $("sum").textContent =
     "감정 단어 " + result.total + "회 감지" +
-    (result.total ? " · 비율 합계 100%" : " · 감정 단어 미감지");
+    (result.total ? " · 표시 비율 합계 " + result.vec.reduce((a,b)=>a+Number((b*100).toFixed(1)),0).toFixed(1) + "%" : " · 감정 단어 미감지");
 
   // 행별 분석
   const lines = poem.text.split("\n");
@@ -1049,77 +1064,42 @@ $("dominant").textContent = result.total
     `;
   }).join("");
 
-  // 행별 감정 흐름
-  const flowResults = lines.map(line => analyze(line));
+  // 행별 감정 흐름: 가로축 행 번호, 세로축 감지 횟수
+  const rows = lines.map((line, i) => ({line, n:i+1, ...analyze(line)})).filter(r => r.line.trim());
+  const max = Math.max(1, ...rows.map(r => r.total));
+  const w = Math.max(320, rows.length * 30 + 60), h = 240;
+  const base = 190, height = 150, step = (w - 65) / Math.max(1, rows.length);
+  let chart = `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="행별 감정 감지 횟수 누적 막대 차트">`;
+  chart += `<text x="8" y="18" font-size="12">감지 횟수(회)</text>`;
+  for (const tick of [...new Set([0, Math.ceil(max/2), max])]) {
+    const y = base - tick/max*height;
+    chart += `<line x1="35" y1="${y}" x2="${w-10}" y2="${y}" stroke="#ddd"/><text x="28" y="${y+4}" text-anchor="end" font-size="11">${tick}</text>`;
+  }
+  rows.forEach((r,j) => {
+    const x = 40+j*step; let y = base;
+    r.counts.forEach((count,i) => {
+      if (!count) return;
+      const bh = count/max*height; y -= bh;
+      chart += `<rect x="${x}" y="${y}" width="${Math.min(20,step-4)}" height="${bh}" fill="${EMOS[i].color}"><title>${r.n}행 ${EMOS[i].name}: ${count}회</title></rect>`;
+    });
+    chart += `<text x="${x+8}" y="${base+15}" text-anchor="middle" font-size="10">${r.n}</text>`;
+  });
+  chart += `<text x="${w/2}" y="230" text-anchor="middle" font-size="12">행 번호</text></svg>`;
+  $("flow").innerHTML = `<div style="overflow-x:auto;max-width:100%">${chart}</div>`;
 
-  const maxLineCount = Math.max(
-    1,
-    ...flowResults.map(r => r.total)
-  );
-
-  $("flow").innerHTML = `
-    <p class="meta">행별 감정 단어 감지 횟수 (단위: 회)</p>
-
-
-    <div style="display:flex;justify-content:space-between;margin:10px 0;" class="meta">
-      <span>0회</span>
-      <span>최대 ${maxLineCount}회</span>
-    </div>
-  ` + lines.map((line, lineIndex) => {
-    if (!line.trim()) return "";
-
-    const lineResult = flowResults[lineIndex];
-
-    const segments = EMOS.map((emotion, i) => {
-      const count = lineResult.counts[i];
-
-      if (!count) return "";
-
-      return `
-        <div
-          title="${emotion.name}: ${count}회"
-          style="
-            width:${count / maxLineCount * 100}%;
-            background:${emotion.color};
-            height:100%;
-          ">
-        </div>
-      `;
-    }).join("");
-
-    return `
-      <div class="flowrow">
-        <span>${lineIndex + 1}행</span>
-        <div class="track" style="display:flex;">
-          ${segments}
-        </div>
-        <span class="meta">
-          ${lineResult.total}회
-        </span>
-      </div>
-    `;
-  }).join("");
-
-
-  // 단어 → 감정 → 주제
-  const words = [
-    ...new Set(result.hits.map(hit => hit.word))
-  ].slice(0, 6);
-
-  $("diagram").innerHTML = `
-    <span>${escapeHTML(words.join(" · ") || "감정 단어 없음")}</span>
-    <strong>→</strong>
-    <span>${dominant(result)}</span>
-    <strong>→</strong>
-    <span>${escapeHTML(poem.theme)}</span>
-  `;
+  // 단어 → 실제 감정 분류 → 문학적 주제
+  $("diagram").innerHTML = EMOS.map((emotion,i) => {
+    const words = [...new Set(result.hits.filter(hit => hit.emotionIndex === i).map(hit => hit.word))];
+    if (!words.length) return "";
+    return `<div style="width:100%"><span>${escapeHTML(words.join(" · "))}</span> → <strong>${emotion.name}</strong></div>`;
+  }).join("") + `<div style="width:100%">${result.total ? "문학적 주제 (별도 해석)" : "감정 단어 미감지 · 문학적 주제"}: ${escapeHTML(poem.theme)}</div>`;
 
   // 유사한 시 3편 추천
   const recommendations = POEMS.map((other, i) => ({
     index: i,
     score: cosine(result.vec, analyze(other.text).vec)
   }))
-  .filter(item => item.index !== index && item.score > 0)
+  .filter(item => item.index !== index && result.total > 0 && analyze(POEMS[item.index].text).total > 0)
   .sort((a, b) => b.score - a.score)
   .slice(0, 3);
 
@@ -1135,7 +1115,7 @@ $("dominant").textContent = result.total
     button.textContent =
       POEMS[item.index].title +
       " — " + POEMS[item.index].poet +
-      " | 유사도 " + (item.score * 100).toFixed(1) + "%";
+      " | 유사도 " + (Math.min(1, item.score) * 100).toFixed(1) + "%" + (item.score === 0 ? " (공통 감정 없음)" : "");
 
     button.onclick = () => selectPoem(item.index);
 
@@ -1195,7 +1175,7 @@ function drawHeatmap() {
     result.vec.forEach((value, emotionIndex) => {
       const td = document.createElement("td");
 
-      td.textContent = (value * 100).toFixed(0) + "%";
+      td.textContent = result.total ? (value * 100).toFixed(1) + "%" : "—";
 
       const alpha = Math.round(18 + value * 205)
         .toString(16)
@@ -1267,7 +1247,7 @@ function init() {
   $("definitions").innerHTML = EMOS.map(emotion => `
     <p>
       <strong>${emotion.name}</strong>:
-      ${emotion.definition}
+      ${emotion.def}
       <span class="meta">
         (${emotion.words.length}개 감정 어휘)
       </span>
