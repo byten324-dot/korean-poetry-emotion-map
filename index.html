@@ -2,50 +2,441 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>시의 마음을 읽다 | 한국 시 감정 분석</title>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f7f5fa;color:#303044;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;line-height:1.8}
-header{background:linear-gradient(120deg,#302744,#8060a5);color:white;text-align:center;padding:55px 20px}
-header h1{font-size:38px;margin:0}
-header p{color:#f0e9f8}
-main{max-width:1200px;margin:25px auto;padding:0 16px}
-.card{background:white;border-radius:18px;padding:25px;margin-bottom:20px;box-shadow:0 6px 24px #30274410}
-.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
-h2{font-size:21px;color:#705194;margin-top:0}
-h3{color:#584477}
-select,textarea,button{width:100%;padding:13px;border-radius:10px;border:1px solid #ddd;font:inherit}
-button{background:#75549e;color:white;border:none;cursor:pointer;margin-top:10px}
-button:hover{background:#56377c}
-.poem{white-space:pre-wrap;line-height:2.3;background:#faf7ff;border-radius:12px;padding:22px;overflow-wrap:anywhere}
-.poem mark{border-radius:3px;padding:2px}
-.meta{color:#777;font-size:13px}
-.bar{height:16px;background:#eeeaf2;border-radius:20px;overflow:hidden;margin:5px 0 15px}
-.fill{height:100%}
-.line{padding:12px 0;border-bottom:1px solid #eee}
-.badge{display:inline-block;background:#eee8f6;border-radius:20px;padding:2px 9px;margin:3px;font-size:12px}
-.flowrow{display:flex;align-items:center;gap:10px;margin:10px 0}
-.flowrow>span{width:45px;font-size:12px;color:#777}
-.track{display:flex;flex:1;height:20px;background:#eee;border-radius:5px;overflow:hidden}
-.legend{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
-.legend span{font-size:12px}
-.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:4px}
-.tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:780px;font-size:12px}
-th,td{border:1px solid #eae5f0;padding:9px;text-align:center}
-th{background:#f1eaf8}
-td:first-child{text-align:left;white-space:nowrap}
-.notice{background:#fff3d9;padding:14px;border-radius:10px;color:#775a22}
-.diagram{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.diagram span{background:#f0eaf8;padding:10px;border-radius:10px}
-footer{text-align:center;color:#888;padding:35px}
-a{color:#705194}
-@media(max-width:700px){
-.grid{grid-template-columns:minmax(0,1fr)}
-.card{padding:18px}
-header h1{font-size:29px}
+:root {
+    --bg: #f5f3fa;
+    --card: #ffffff;
+    --primary: #75639e;
+    --text: #302b3b;
+    --muted: #746e80;
+    --border: #e6e0ef;
+    --soft: #eee9f7;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+    line-height: 1.7;
+}
+
+header {
+    padding: 48px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #e7def6, #faf7ff);
+    border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+    margin: 0;
+    font-size: clamp(28px, 5vw, 44px);
+    letter-spacing: -2px;
+}
+
+header p {
+    color: var(--muted);
+    margin: 12px 0 20px;
+}
+
+.badge {
+    display: inline-block;
+    background: white;
+    color: var(--primary);
+    padding: 5px 13px;
+    border-radius: 30px;
+    margin: 3px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.layout {
+    max-width: 1500px;
+    margin: auto;
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 265px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+aside, main {
+    min-width: 0;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px #51416b08;
+    min-width: 0;
+}
+
+.card h2 {
+    font-size: 20px;
+    margin: 0 0 18px;
+    letter-spacing: -0.6px;
+}
+
+.card h3 {
+    font-size: 16px;
+    margin: 18px 0 8px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+button {
+    font: inherit;
+    cursor: pointer;
+}
+
+.poem-button {
+    width: 100%;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    padding: 11px;
+    border-radius: 10px;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.poem-button:hover,
+.poem-button.active {
+    background: var(--soft);
+    border-color: #cbbde4;
+}
+
+.poem-button.active {
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.poem-button small {
+    display: block;
+    color: var(--muted);
+    margin-left: 16px;
+    font-weight: normal;
+}
+
+.dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 7px;
+}
+
+.poem-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-family: "Noto Serif KR", Batang, serif;
+    font-size: 17px;
+    line-height: 2.15;
+    padding: 22px;
+    background: #fcfbfe;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.meta, .source, .note {
+    font-size: 13px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+
+.meta {
+    margin-bottom: 16px;
+}
+
+.source {
+    margin-top: 16px;
+}
+
+a {
+    color: var(--primary);
+}
+
+mark {
+    color: inherit;
+    border-radius: 3px;
+    padding: 1px;
+}
+
+.bar-row {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) 55px;
+    gap: 9px;
+    align-items: center;
+    margin: 13px 0;
+    font-size: 13px;
+}
+
+.bar-track {
+    height: 13px;
+    background: #f0edf4;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    transition: width .25s;
+}
+
+.summary {
+    background: var(--soft);
+    padding: 18px;
+    border-radius: 12px;
+    margin-top: 18px;
+}
+
+.dominant {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background: #f7f4fb;
+}
+
+.tag {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 15px;
+    font-size: 12px;
+    margin: 2px;
+}
+
+.legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+    margin-bottom: 14px;
+}
+
+.flow-wrap {
+    display: flex;
+    gap: 6px;
+}
+
+.flow-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 180px;
+    font-size: 10px;
+    color: var(--muted);
+}
+
+.flow-chart {
+    display: flex;
+    gap: 5px;
+    align-items: flex-end;
+    min-height: 205px;
+    flex: 1;
+    border-left: 1px solid var(--border);
+}
+
+.flow-column {
+    flex: 1;
+    min-width: 24px;
+    text-align: center;
+}
+
+.flow-stack {
+    height: 180px;
+    display: flex;
+    flex-direction: column-reverse;
+    border-bottom: 1px solid var(--border);
+}
+
+.flow-segment {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.flow-number {
+    font-size: 11px;
+    color: var(--muted);
+    padding-top: 5px;
+}
+
+.diagram-row {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) 20px
+    minmax(0,1fr) 20px minmax(0,1fr);
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.node {
+    padding: 12px 8px;
+    background: var(--soft);
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.arrow {
+    text-align: center;
+    color: var(--primary);
+}
+
+.recommend {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+    background: #fcfbfe;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    text-align: left;
+}
+
+.recommend:hover {
+    background: var(--soft);
+}
+
+.heatmap {
+    min-width: 700px;
+}
+
+.heatmap td,
+.heatmap th {
+    text-align: center;
+}
+
+textarea, input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font: inherit;
+    color: var(--text);
+    background: #fcfbfe;
+    margin-bottom: 10px;
+}
+
+textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.primary-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    background: var(--primary);
+}
+
+svg {
+    display: block;
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+    margin: auto;
+}
+
+footer {
+    text-align: center;
+    padding: 28px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    #poemList {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 30px 15px;
+    }
+
+    .layout {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .card {
+        padding: 16px;
+        border-radius: 13px;
+    }
+
+    .poem-text {
+        padding: 14px;
+        font-size: 15px;
+    }
+
+    .diagram-row {
+        grid-template-columns: minmax(0,1fr) 14px
+        minmax(0,1fr) 14px minmax(0,1fr);
+        gap: 3px;
+    }
+
+    .node {
+        padding: 8px 4px;
+        font-size: 11px;
+    }
+
+    .bar-row {
+        grid-template-columns: 48px minmax(0,1fr) 48px;
+        gap: 6px;
+    }
 }
 </style>
 </head>
@@ -53,217 +444,295 @@ header h1{font-size:29px}
 <body>
 
 <header>
-<h1>🌸 시의 마음을 읽다</h1>
-<p>한국 근대시 15편의 감정을 데이터와 문학으로 함께 읽는 공간</p>
-<p>감성컴퓨팅 · 한국 시 감정 분석 프로젝트</p>
+    <h1>시의 마음을 읽다</h1>
+    <p>한국 근대시의 감정을 데이터와 문학으로 함께 읽는 공간</p>
+    <span class="badge">한국 시 15편</span>
+    <span class="badge">감정 범주 8개</span>
+    <span class="badge">감성컴퓨팅 프로젝트</span>
 </header>
+
+<div class="layout">
+
+<aside>
+    <section class="card">
+        <h2>작품 목록</h2>
+        <div id="poemList"></div>
+    </section>
+
+    <section class="card">
+        <h2>나의 시 분석</h2>
+        <input id="customTitle" aria-label="시 제목"
+            placeholder="시 제목 (선택)">
+        <textarea id="customText" aria-label="시 본문"
+            placeholder="분석하고 싶은 시를 입력하세요."></textarea>
+        <button class="primary-button" id="customButton">
+            감정 분석하기
+        </button>
+        <div id="customResult" aria-live="polite"></div>
+    </section>
+</aside>
 
 <main>
 
-<section class="card">
-<h2>📚 시 선택하기</h2>
-<select id="selector"></select>
-<p class="meta" id="status"></p>
-</section>
-
 <div class="grid">
+    <section class="card" id="poemSection">
+        <h2 id="title"></h2>
+        <div id="meta" class="meta"></div>
+        <div id="poem" class="poem-text"></div>
+        <div id="source" class="source"></div>
+    </section>
 
-<section class="card">
-<h2 id="title">📖 시 원문</h2>
-<p class="meta" id="meta"></p>
-<div class="poem" id="poem"></div>
-<p class="meta" id="source"></p>
-</section>
+    <section class="card">
+        <h2>감정 비율 분석</h2>
+        <div id="bars"></div>
+        <p id="sum" class="note"></p>
 
-<section class="card">
-<h2>💗 감정 분석 결과</h2>
-<div id="bars"></div>
-<h3>감정 프로필 레이더 차트</h3>
-<div id="radar" style="width:100%; max-width:440px; margin:20px auto;"></div>
-<h3 id="dominant"></h3>
-<p id="theme"></p>
-<p id="interpretation"></p>
-<p class="meta" id="sum"></p>
-</section>
-
+        <div class="summary">
+            <div class="note">사전 기반 지배 정서</div>
+            <div id="dominant" class="dominant"></div>
+            <h3>작품의 주제</h3>
+            <div id="theme"></div>
+            <h3>문학적 해석</h3>
+            <div id="interpretation"></div>
+        </div>
+    </section>
 </div>
 
 <div class="grid">
+    <section class="card">
+        <h2>감정 프로필</h2>
+        <div id="radar"></div>
+        <p class="note">각 축은 감정별 비율을 나타냅니다.</p>
+    </section>
 
-<section class="card">
-<h2>🔎 행별 감정 분석</h2>
-<div id="lines"></div>
-</section>
-
-<section class="card">
-<h2>📈 감정 흐름 차트</h2>
-<div class="legend" id="legend"></div>
-<div id="flow"></div>
-</section>
-
-</div>
-
-<div class="grid">
-
-<section class="card">
-<h2>🧩 단어 → 감정 → 주제</h2>
-<div class="diagram" id="diagram"></div>
-</section>
-
-<section class="card">
-<h2>💕 비슷한 감정의 시 3편</h2>
-<p class="meta">감정 비율을 비교하는 코사인 유사도 방식입니다. 0%는 공통 감정이 없음을 뜻하며, 미감지 작품은 비교에서 제외합니다.</p>
-<div id="recommendations"></div>
-</section>
-
+    <section class="card">
+        <h2>행별 감정 흐름</h2>
+        <div id="legend" class="legend"></div>
+        <div class="scroll">
+            <div class="flow-wrap">
+                <div id="flowAxis" class="flow-axis"></div>
+                <div id="flow" class="flow-chart"></div>
+            </div>
+        </div>
+        <p class="note">
+            가로축: 행 번호 / 세로축: 감정 어휘 감지 수
+        </p>
+    </section>
 </div>
 
 <section class="card">
-<h2>🎨 전체 시 감정 비교 히트맵</h2>
-<p class="meta">색이 진할수록 해당 감정의 비율이 높습니다. —는 감정 단어 미감지를 뜻합니다.</p>
-<div class="tablewrap" id="heatmap"></div>
-</section>
-
-<section class="card">
-<h2>✍️ 나만의 시 분석하기</h2>
-<textarea id="custom" rows="6" placeholder="직접 쓴 시나 문장을 입력해 보세요."></textarea>
-<button id="customBtn">감정 분석하기</button>
-<div id="customResult"></div>
+    <h2>행별 감정 분석</h2>
+    <div class="scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>행</th>
+                    <th>시 본문</th>
+                    <th>감지된 감정</th>
+                    <th>근거 시어</th>
+                </tr>
+            </thead>
+            <tbody id="lines"></tbody>
+        </table>
+    </div>
 </section>
 
 <div class="grid">
+    <section class="card">
+        <h2>시어–감정–주제 연결</h2>
+        <div id="diagram"></div>
+    </section>
 
-<section class="card">
-<h2>📖 감정 범주와 분석 방법</h2>
-<div id="definitions"></div>
-<p class="notice">
-이 웹사이트는 감정 사전에 등록된 단어를 찾는 규칙 기반 분석을 사용합니다.
-반어법, 은유, 상징, 역사적 맥락을 완전히 이해하지 못하므로
-결과는 문학적 해석의 정답이 아니라 참고 자료입니다.
-</p>
-</section>
-
-<section class="card">
-<h2>🧪 문학적 해석과의 차이</h2>
-<p><b>① 「진달래꽃」</b><br>
-‘눈물’이라는 단어가 감지되지만, 화자는 눈물을 흘리지 않겠다고 말합니다.
-단어만 계산하면 부정 표현과 반어적 의미를 놓칠 수 있습니다.
-개선하려면 부정어와 문장 전체의 관계를 함께 분석해야 합니다.</p>
-
-<p><b>② 「먼 후일」</b><br>
-‘잊었노라’가 반복되지만 실제 의미는 잊지 못하는 그리움에 가깝습니다.
-단어 빈도만으로는 반복 표현의 문학적 기능을 파악하기 어렵습니다.
-개선하려면 작품 전체의 맥락과 반어 표현을 분석해야 합니다.</p>
-
-<p><b>③ 「나룻배와 행인」</b><br>
-나룻배와 행인의 관계는 헌신적인 사랑을 상징합니다.
-하지만 ‘사랑’이라는 직접적인 단어가 적으면 사랑 점수가 낮을 수 있습니다.
-개선하려면 상징과 비유 관계를 이해하는 의미 분석이 필요합니다.</p>
-
-<p><b>④ 「자화상」</b><br>
-화자는 자신을 미워하면서도 가엾어하고 그리워합니다.
-단순한 감정 분류는 이러한 양가감정을 충분히 설명하기 어렵습니다.
-개선하려면 감정의 대상이 누구인지 함께 파악해야 합니다.</p>
-</section>
-
+    <section class="card">
+        <h2>유사 감성 시 추천</h2>
+        <div id="recommendations"></div>
+        <p class="note">
+            감정 비율 벡터의 코사인 유사도를 사용합니다.
+        </p>
+    </section>
 </div>
 
 <section class="card">
-<h2>ℹ️ 프로젝트의 한계</h2>
-<p>
-이 프로젝트는 교육용 감정 사전을 이용한 탐색적 분석입니다.
-동일한 단어도 문맥에 따라 다른 감정을 나타낼 수 있습니다.
-작품의 원문 표기와 현대어 표기 차이도 분석 결과에 영향을 줄 수 있습니다.
-시의 발표 연도, 작성 연도, 시집 수록 연도는 서로 다를 수 있습니다.
-</p>
+    <h2>전체 작품 감정 비교</h2>
+    <div class="scroll">
+        <table id="heatmap" class="heatmap"></table>
+    </div>
+    <p class="note">
+        색이 진할수록 해당 감정의 비율이 높습니다.
+    </p>
+</section>
+
+<section class="card">
+    <h2>감정 범주와 분석 방법</h2>
+    <div id="definitions"></div>
+
+    <h3>분석 원리</h3>
+    <p>
+        작품을 행 단위로 나누고 감정 사전의 어휘와
+        본문을 비교합니다. 긴 표현을 우선 감지하며,
+        동일 위치에서 어휘가 중복 계산되지 않도록 합니다.
+        감정별 감지 횟수를 전체 감지 횟수로 나누어
+        감정 비율을 계산합니다.
+    </p>
+
+    <p class="note">
+        사전 기반 분석은 반어, 부정, 상징,
+        시대적 배경을 완전히 이해하지 못합니다.
+        정량 분석 결과와 문학적 해석은 다를 수 있습니다.
+    </p>
 </section>
 
 </main>
+</div>
 
 <footer>
-🌸 시의 마음을 읽다 · 감성컴퓨팅 프로젝트
+    2026학년도 2학기 감성컴퓨팅 개인 프로젝트<br>
+    한국 근대시 15편의 사전 기반 감정 분석
 </footer>
 
 <script>
+"use strict";
 
-// =======================================
-// 1. 감정 사전
-// =======================================
+/* 1. 감정 범주 및 감정 사전 */
 
-const EMOS = [
-  {
-    k:"love",
-    name:"사랑",
-    color:"#e989a7",
-    def:"다른 존재를 소중히 여기고 아끼며 정서적 유대감을 느끼는 감정이다.",
-    words:["사랑","애정","연인","다정","소중","연모","포옹","입맞춤","정든","애틋","아끼","사모","사랑하"]
-  },
-  {
-    k:"sadness",
-    name:"슬픔",
-    color:"#6f91c9",
-    def:"상실이나 이별, 고통으로 마음이 아프고 괴로운 감정이다.",
-    words:["슬픔","슬픈","슬피","눈물","울음","울다","웁니다","이별","설움","서럽","괴로","상실","비통","가엾","슬퍼","울고"]
-  },
-  {
-    k:"longing",
-    name:"그리움",
-    color:"#a38bd2",
-    def:"멀리 있거나 사라진 대상과 지나간 시간을 다시 만나고 싶은 감정이다.",
-    words:["그리움","그리워","그립","그리다가","추억","追憶","고향","기다리","못잊","잊지","보고싶","보고 싶","그리운","향수","회상"]
-  },
-  {
-    k:"hope",
-    name:"희망",
-    color:"#6cb59c",
-    def:"현재의 어려움을 넘어 더 나은 미래가 오기를 기대하는 감정이다.",
-    words:["희망","希望","소망","살자","새벽","내일","來日","새로운","기대","꿈꾸","바라다","바라며","극복","용기","다짐","믿음"]
-  },
-  {
-    k:"peace",
-    name:"평온",
-    color:"#70b9b9",
-    def:"불안이나 갈등에서 벗어나 마음이 차분하고 안정된 상태이다.",
-    words:["고요","평온","평화","조용","잔잔","안식","편안","차분","가만히","온화","평안","안온","평화롭","고즈넉"]
-  },
-  {
-    k:"joy",
-    name:"기쁨",
-    color:"#e6b35e",
-    def:"즐겁고 행복한 경험이나 만족스러운 상황에서 느끼는 밝은 감정이다.",
-    words:["기쁨","행복","웃음","웃으며","웃는다","미소","즐거","반갑","환희","기뻐","기쁜","좋아","즐겁","흐뭇","신나"]
-  },
-  {
-    k:"anger",
-    name:"분노",
-    color:"#d37d7d",
-    def:"부당하거나 불쾌한 상황에 대해 반발하고 저항하려는 감정이다.",
-    words:["분노","원망","미워","미움","증오","저항","억울","원한","시샘","시새움","짓밟","격분","분개","성내","노여움"]
-  },
-  {
-    k:"fear",
-    name:"두려움",
-    color:"#8793a8",
-    def:"위험이나 불확실한 상황으로 인해 느끼는 공포와 불안의 감정이다.",
-    words:["두려움","공포","불안","갈 길은 하나 없","걱정","무섭","두렵","떨리","겁먹","위험","무서워","두려워","초조","섬뜩","겁나","공포감"]
-  }
+const EMOTIONS = [
+    {
+        k: "love",
+        name: "사랑",
+        color: "#e989a7",
+        def: "타인이나 대상에 대한 애정과 소중히 여기는 마음.",
+        words: [
+            "사랑", "애정", "연인", "다정", "소중",
+            "연모", "포옹", "입맞춤", "정든", "애틋",
+            "아끼", "사모", "사랑하"
+        ]
+    },
+    {
+        k: "sadness",
+        name: "슬픔",
+        color: "#6f91c9",
+        def: "상실, 이별, 고통에서 발생하는 비애와 서러움.",
+        words: [
+            "슬픔", "슬픈", "슬피", "눈물", "울음",
+            "울다", "웁니다", "이별", "설움", "서럽",
+            "괴로", "상실", "비통", "가엾", "슬퍼",
+            "울고", "쓸쓸", "불설워"
+        ]
+    },
+    {
+        k: "longing",
+        name: "그리움",
+        color: "#a38bd2",
+        def: "멀어진 사람이나 지나간 시간과 장소를 다시 만나고 싶은 마음.",
+        words: [
+            "그리움", "그리워", "그립", "그리다가",
+            "추억", "追憶", "고향", "기다리", "못잊",
+            "잊지", "보고싶", "보고 싶", "그리운",
+            "향수", "회상", "憧憬"
+        ]
+    },
+    {
+        k: "hope",
+        name: "희망",
+        color: "#6cb59c",
+        def: "미래의 변화와 회복을 기대하며 앞으로 나아가려는 마음.",
+        words: [
+            "희망", "希望", "소망", "새벽", "내일",
+            "來日", "새로운", "기대", "꿈꾸", "바라다",
+            "바라며", "극복", "용기", "다짐", "믿음",
+            "살자", "믿습니다"
+        ]
+    },
+    {
+        k: "peace",
+        name: "평온",
+        color: "#70b9b9",
+        def: "갈등과 긴장이 줄어들어 안정되고 고요한 상태.",
+        words: [
+            "고요", "평온", "평화", "조용", "잔잔",
+            "안식", "편안", "차분", "가만히", "온화",
+            "평안", "안온", "평화롭", "고즈넉"
+        ]
+    },
+    {
+        k: "joy",
+        name: "기쁨",
+        color: "#e6b35e",
+        def: "즐거움과 만족, 긍정적인 경험에서 생기는 밝은 감정.",
+        words: [
+            "기쁨", "행복", "웃음", "웃으며", "웃는다",
+            "미소", "즐거", "반갑", "환희", "기뻐",
+            "기쁜", "좋아", "즐겁", "흐뭇", "신나"
+        ]
+    },
+    {
+        k: "anger",
+        name: "분노",
+        color: "#d37d7d",
+        def: "부당함이나 갈등에 대한 반발, 미움과 원망의 감정.",
+        words: [
+            "분노", "원망", "미워", "미움", "증오",
+            "저항", "억울", "원한", "시샘", "시새움",
+            "짓밟", "격분", "분개", "성내", "노여움"
+        ]
+    },
+    {
+        k: "fear",
+        name: "불안",
+        color: "#8793a8",
+        def: "불확실한 상황이나 위협 앞에서 느끼는 걱정과 두려움.",
+        words: [
+            "두려움", "공포", "불안", "걱정", "무섭",
+            "두렵", "떨리", "겁먹", "위험", "무서워",
+            "두려워", "초조", "섬뜩", "겁나", "공포감",
+            "막막", "방황", "갈 길은 하나 없",
+            "어디로 갈까", "오라는 곳이 없어"
+        ]
+    }
 ];
 
-// =======================================
-// 2. 한국 시 15편
-// =======================================
+/* 2. 원문 및 발표 기록 출처 */
+
+const WIKI = "https://ko.wikisource.org/wiki/";
+const AKS = "https://encykorea.aks.ac.kr/Article/";
+
+function yoonSource(title) {
+    return WIKI + encodeURI(
+        "하늘과_바람과_별과_시_(1948년)/" +
+        title.replaceAll(" ", "_")
+    );
+}
+
+function kimSource(title) {
+    return WIKI + encodeURI(
+        "진달래꽃_(시집)/" +
+        title.replaceAll(" ", "_")
+    );
+}
+
+function hanSource(title) {
+    return WIKI + encodeURI(
+        "님의_침묵/" +
+        title.replaceAll(" ", "_")
+    );
+}
+
+/* 3. 작품 데이터 */
 
 const POEMS = [
-
 {
-id:"prologue",
-title:"서시",
-poet:"윤동주",
-poetDeath:1945,
-year:"1948",
-yearNote:"1941년 11월 20일 작성, 1948년 시집 수록",
-source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/서시",
-text:`죽는 날까지 하늘을 우르러
+    id: "prologue",
+    title: "서시",
+    poet: "윤동주",
+    poetDeath: 1945,
+    year: 1948,
+    yearNote: "1941년 11월 20일 작성, 1948년 정음사 유고시집 수록",
+    collection: "하늘과 바람과 별과 시 (1948)",
+    source: yoonSource("서시"),
+    reference: AKS + "E0027887",
+    theme: "부끄럼 없는 삶에 대한 윤리적 성찰과 다짐",
+    interpretation: "화자는 하늘을 우러러 부끄럼 없는 삶을 살고자 한다. 바람과 별은 자신의 내면을 돌아보게 하는 자연적 상징이다. 괴로움과 사랑의 표현은 현실의 고통을 넘어 모든 생명을 사랑하려는 윤리적 의지를 드러낸다.",
+    text: `죽는 날까지 하늘을 우르러
 한점 부끄럼이 없기를,
 잎새에 이는 바람에도
 나는 괴로워했다.
@@ -272,20 +741,21 @@ text:`죽는 날까지 하늘을 우르러
 그리고 나한테 주어진 길을
 걸어가야겠다.
 
-오늘 밤에도 별이 바람에 스치운다.`,
-theme:"양심과 자기 성찰",
-interp:"화자는 부끄럼 없는 삶을 다짐한다. 괴로움은 도덕적 자기 점검을 나타낸다. 사랑의 결심은 삶의 윤리적 방향을 보여 준다."
+오늘 밤에도 별이 바람에 스치운다.`
 },
-
 {
-id:"stars",
-title:"별 헤는 밤",
-poet:"윤동주",
-poetDeath:1945,
-year:"1948",
-yearNote:"1941년 11월 5일 작성, 1948년 시집 수록",
-source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/별_헤는_밤",
-text:`季節이 지나가는 하늘에는
+    id: "stars",
+    title: "별 헤는 밤",
+    poet: "윤동주",
+    poetDeath: 1945,
+    year: 1948,
+    yearNote: "1941년 11월 5일 작성, 1948년 유고시집 수록",
+    collection: "하늘과 바람과 별과 시 (1948)",
+    source: yoonSource("별 헤는 밤"),
+    reference: AKS + "E0071330",
+    theme: "추억과 그리움, 자기 성찰과 미래에 대한 기대",
+    interpretation: "별은 화자가 기억하는 사람들과 지나간 시간을 불러오는 매개체이다. 어머니와 고향에 대한 그리움은 현실의 외로움과 연결된다. 마지막에 등장하는 봄과 풀은 부끄러운 현실을 극복하고 새로운 삶으로 나아가려는 가능성을 보여 준다.",
+    text: `季節이 지나가는 하늘에는
 가을로 가득 차있읍니다.
 
 나는 아무 걱정도 없이
@@ -323,20 +793,21 @@ text:`季節이 지나가는 하늘에는
 그러나 겨울이 지나고 나의 별에도 봄이 오면
 무덤 우에 파란 잔디가 피어나듯이
 내 이름자 묻힌 언덕우에도
-자랑처럼 풀이 무성할게외다.`,
-theme:"추억과 그리움, 자기 성찰",
-interp:"별을 세는 행위는 기억을 되살리는 과정이다. 멀리 있는 사람에 대한 그리움과 자신의 이름에 대한 부끄러움이 교차한다. 마지막 봄의 이미지는 회복의 기대를 암시한다."
+자랑처럼 풀이 무성할게외다.`
 },
-
 {
-id:"selfportrait",
-title:"자화상",
-poet:"윤동주",
-poetDeath:1945,
-year:"1948",
-yearNote:"1939년 작성, 1948년 시집 수록",
-source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/자화상",
-text:`산모퉁이를 돌아 논가 외딴우물을 홀로 찾어가선 가만히 들여다봅니다.
+    id: "selfportrait",
+    title: "자화상",
+    poet: "윤동주",
+    poetDeath: 1945,
+    year: 1941,
+    yearNote: "1939년 작성, 1941년 교지 문우 게재, 1948년 시집 수록",
+    collection: "하늘과 바람과 별과 시 (1948)",
+    source: yoonSource("자화상"),
+    reference: AKS + "E0071331",
+    theme: "자아에 대한 미움과 연민, 자기 성찰",
+    interpretation: "우물 속 사나이는 화자가 바라보는 자기 자신의 모습이다. 미움과 연민, 그리움이 반복되는 과정은 자신의 모습을 쉽게 받아들이지 못하는 내적 갈등을 보여 준다. 마지막에 추억처럼 남은 사나이는 자기 자신과 화해하려는 가능성을 드러낸다.",
+    text: `산모퉁이를 돌아 논가 외딴우물을 홀로 찾어가선 가만히 들여다봅니다.
 
 우물속에는 달이 밝고 구름이 흐르고 하늘이 펼치고 파아란 바람이 불고 가을이 있습니다.
 
@@ -350,20 +821,21 @@ text:`산모퉁이를 돌아 논가 외딴우물을 홀로 찾어가선 가만�
 
 돌아가다 생각하니 그 사나이가 그리워집니다.
 
-우물속에는 달이 밝고 구름이 흐르고 하늘이 펼치고 파아란 바람이 불고 가을이 있고 追憶처럼 사나이가 있습니다.`,
-theme:"자기 인식의 갈등",
-interp:"우물은 자신을 비추는 성찰의 공간이다. 미움과 연민과 그리움이 반복되어 양가감정이 드러난다. 자연의 고요함은 내면의 갈등과 대비된다."
+우물속에는 달이 밝고 구름이 흐르고 하늘이 펼치고 파아란 바람이 불고 가을이 있고 追憶처럼 사나이가 있습니다.`
 },
-
 {
-id:"new-road",
-title:"새로운 길",
-poet:"윤동주",
-poetDeath:1945,
-year:"1948",
-yearNote:"1938년 5월 10일 작성, 1948년 시집 수록",
-source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/새로운_길",
-text:`내를 건너서 숲으로
+    id: "new-road",
+    title: "새로운 길",
+    poet: "윤동주",
+    poetDeath: 1945,
+    year: 1941,
+    yearNote: "1938년 5월 10일 작성, 1941년 교지 문우 게재, 1948년 시집 수록",
+    collection: "하늘과 바람과 별과 시 (1948)",
+    source: yoonSource("새로운 길"),
+    reference: yoonSource("새로운 길"),
+    theme: "일상 속에서 발견하는 새로운 삶과 희망",
+    interpretation: "화자는 반복되는 일상의 길을 새로운 길로 인식한다. 민들레와 까치, 바람은 평범한 하루에도 변화가 존재함을 보여 준다. 처음과 끝의 반복은 같은 길을 걸으면서도 매일 새로운 마음으로 살아가려는 태도를 강조한다.",
+    text: `내를 건너서 숲으로
 고개를 넘어서 마을로
 
 어제도 가고 오늘도 갈
@@ -376,20 +848,21 @@ text:`내를 건너서 숲으로
 오늘도…… 내일도……
 
 내를 건너서 숲으로
-고개를 넘어서 마을로`,
-theme:"반복 속의 새 출발",
-interp:"반복되는 길은 일상과 지속성을 상징한다. 같은 길을 새로운 길로 부르는 역설이 특징이다. 자연의 생동감은 앞으로 나아갈 의지를 강화한다."
+고개를 넘어서 마을로`
 },
-
 {
-id:"easy-poem",
-title:"쉽게 씨워진 시",
-poet:"윤동주",
-poetDeath:1945,
-year:"1947",
-yearNote:"1942년 6월 3일 작성, 1947년 경향신문 발표로 조사됨, 1948년 시집 수록",
-source:"https://ko.wikisource.org/wiki/하늘과_바람과_별과_시_(1948년)/쉽게_씨워진_시",
-text:`窓밖에 밤비가 속살거려
+    id: "easy-poem",
+    title: "쉽게 씨워진 시",
+    poet: "윤동주",
+    poetDeath: 1945,
+    year: 1947,
+    yearNote: "1942년 6월 3일 작성, 1947년 2월 13일 경향신문 발표, 1948년 시집 수록",
+    collection: "하늘과 바람과 별과 시 (1948)",
+    source: yoonSource("쉽게 씨워진 시"),
+    reference: AKS + "E0071398",
+    theme: "식민지 현실 속 시인의 부끄러움과 자기 위로",
+    interpretation: "화자는 어려운 시대에 시를 쓰는 자신의 처지를 부끄럽게 여긴다. 남의 나라에 있는 육첩방은 현실과 자신의 삶 사이의 거리감을 보여 준다. 마지막의 악수는 자기 자신을 위로하며 어둠을 극복하려는 의지로 읽을 수 있다.",
+    text: `窓밖에 밤비가 속살거려
 六疊房은 남의 나라,
 
 詩人이란 슬픈 天命인줄 알면서도
@@ -418,20 +891,21 @@ text:`窓밖에 밤비가 속살거려
 時代처럼 올 아츰을 기다리는 最後의나,
 
 나는 나에게 적은 손을 내밀어
-눈물과 慰安으로 잡는 最初의 握手.`,
-theme:"시대적 고뇌와 자기 위안",
-interp:"화자는 타국에서 시를 쓰는 자신의 처지를 성찰한다. 시가 쉽게 쓰인다는 사실에 대한 부끄러움이 드러난다. 마지막 악수는 자기 자신을 위로하고 현실을 견디려는 태도를 나타낸다."
+눈물과 慰安으로 잡는 最初의 握手.`
 },
-
 {
-id:"azalea",
-title:"진달래꽃",
-poet:"김소월",
-poetDeath:1934,
-year:"1922",
-yearNote:"1922년 개벽 발표, 1925년 시집 수록",
-source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/진달래꽃",
-text:`나 보기가 역겨워
+    id: "azalea",
+    title: "진달래꽃",
+    poet: "김소월",
+    poetDeath: 1934,
+    year: 1922,
+    yearNote: "1922년 7월 개벽 제25호 발표, 1925년 시집 수록",
+    collection: "진달래꽃 (1925)",
+    source: kimSource("진달래꽃"),
+    reference: AKS + "E0054623",
+    theme: "이별의 슬픔과 사랑의 절제",
+    interpretation: "화자는 떠나는 상대를 붙잡지 않고 꽃을 뿌려 보내겠다고 말한다. 그러나 눈물을 흘리지 않겠다는 표현은 슬픔이 없다는 뜻보다 감정을 억누르는 태도에 가깝다. 반복되는 이별 상황과 진달래꽃의 상징은 깊은 사랑과 절제된 비애를 함께 드러낸다.",
+    text: `나 보기가 역겨워
 가실 때에는
 말없이 고이 보내드리오리다.
 
@@ -445,20 +919,21 @@ text:`나 보기가 역겨워
 
 나 보기가 역겨워
 가실 때에는
-죽어도 아니 눈물 흘리오리다.`,
-theme:"이별의 슬픔과 사랑",
-interp:"화자는 사랑하는 사람과의 이별을 받아들이는 듯 말한다. 진달래꽃을 뿌리는 행동에는 상대를 향한 애정과 슬픔이 함께 담겨 있다. 눈물을 흘리지 않겠다는 표현은 오히려 깊은 슬픔을 드러내는 반어로 해석할 수 있다."
+죽어도 아니 눈물 흘리오리다.`
 },
-
 {
-id:"invocation",
-title:"초혼",
-poet:"김소월",
-poetDeath:1934,
-year:"1925",
-yearNote:"1925년 진달래꽃 시집 수록",
-source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/초혼",
-text:`산산이 부서진 이름이어!
+    id: "invocation",
+    title: "초혼",
+    poet: "김소월",
+    poetDeath: 1934,
+    year: 1925,
+    yearNote: "1925년 시집 진달래꽃 수록. 같은 해 영대 제5호에 유사한 선행 작품 발표",
+    collection: "진달래꽃 (1925)",
+    source: kimSource("초혼"),
+    reference: AKS + "E0057085",
+    theme: "죽음으로 인한 상실과 간절한 사랑",
+    interpretation: "화자는 돌아올 수 없는 사람의 이름을 반복해서 부른다. 이름을 불러도 응답이 없다는 사실은 상실의 깊이를 강조한다. 사랑이라는 어휘가 반복되지만 작품 전체를 지배하는 정서는 죽음으로 인한 비통함과 절망에 가깝다.",
+    text: `산산이 부서진 이름이어!
 허공중(虛空中)에 헤어진 이름이어!
 불러도 주인(主人)없는 이름이어!
 부르다가 내가 죽을 이름이어!
@@ -481,20 +956,21 @@ text:`산산이 부서진 이름이어!
 선 채로 이 자리에 돌이 되어도
 부르다가 내가 죽을 이름이어!
 사랑하던 그 사람이어!
-사랑하던 그 사람이어!`,
-theme:"상실과 절규",
-interp:"부재한 사람을 부르는 행위가 반복된다. 되돌아오지 않는 응답은 상실감을 깊게 만든다. 돌이 되겠다는 극단적 표현은 그리움의 강도를 보여 준다."
+사랑하던 그 사람이어!`
 },
-
 {
-id:"mountain-flower",
-title:"산유화",
-poet:"김소월",
-poetDeath:1934,
-year:"1924",
-yearNote:"1924년 영대 발표로 조사됨, 1925년 시집 수록",
-source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/산유화",
-text:`산에는 꽃 피네
+    id: "mountain-flower",
+    title: "산유화",
+    poet: "김소월",
+    poetDeath: 1934,
+    year: 1925,
+    yearNote: "한국민족문화대백과사전 기준 1925년 시집 수록. 1924년 영대 발표설 병존",
+    collection: "진달래꽃 (1925)",
+    source: kimSource("산유화"),
+    reference: AKS + "E0026311",
+    theme: "자연의 순환과 존재의 고독",
+    interpretation: "꽃이 피고 지는 과정은 자연의 순환을 보여 준다. 저만치 혼자 피어 있는 꽃은 개별 존재의 고독을 떠올리게 한다. 작은 새의 모습은 자연에 대한 친밀감을 드러내지만 작품 전체에는 고요함과 쓸쓸함이 함께 존재한다.",
+    text: `산에는 꽃 피네
 꽃이 피네
 갈 봄 여름없이
 꽃이 피네
@@ -512,59 +988,62 @@ text:`산에는 꽃 피네
 산에는 꽃 지네
 꽃이 지네
 갈 봄 여름없이
-꽃이 지네`,
-theme:"자연의 순환과 고독",
-interp:"꽃이 피고 지는 장면이 자연의 순환을 이룬다. 혼자 피어 있는 꽃은 존재의 고독을 암시한다. 담담한 어조와 쓸쓸한 정서가 함께 나타난다."
+꽃이 지네`
 },
-
 {
-id:"later",
-title:"먼 후일",
-poet:"김소월",
-poetDeath:1934,
-year:"1925",
-yearNote:"1925년 시집 수록, 최초 발표 연도 미확정",
-source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/먼_후일",
-text:`먼 훗날 당신이 찾으시면
-그때에 내 말이 '잊었노라'
+    id: "later",
+    title: "먼 후일",
+    poet: "김소월",
+    poetDeath: 1934,
+    year: 1920,
+    yearNote: "1920년 7월 학생계 창간호 발표, 1925년 시집 수록",
+    collection: "진달래꽃 (1925)",
+    source: kimSource("먼 후일"),
+    reference: AKS + "E0054623",
+    theme: "잊었다는 말에 숨겨진 그리움",
+    interpretation: "화자는 미래에 상대를 만나면 잊었다고 말하겠다고 한다. 그러나 잊었다는 말의 반복은 실제로는 상대를 잊지 못했다는 사실을 강조한다. 표면적인 말과 내면의 감정이 반대되는 반어적 표현이 작품의 핵심이다.",
+    text: `먼 훗날 당신이 찾으시면
+그때에 내 말이 \`잊었노라'
 
 당신이 속으로 나무라면
-'무척 그리다가 잊었노라'
+\`무척 그리다가 잊었노라'
 
 그래도 당신이 나무라면
-'믿기지 않아서 잊었노라'
+\`믿기지 않아서 잊었노라'
 
 오늘도 어제도 아니 잊고
-먼 훗날 그때에 '잊었노라'`,
-theme:"부정 속에 드러난 그리움",
-interp:"잊었다는 말이 반복되지만 실제로는 잊지 못한다. 말의 표면과 마음의 방향이 서로 어긋난다. 이 반어는 단순 감정 사전 분석의 대표적인 한계를 드러낸다."
+먼 훗날 그때에 \`잊었노라'`
 },
-
 {
-id:"mother",
-title:"엄마야 누나야",
-poet:"김소월",
-poetDeath:1934,
-year:"1922",
-yearNote:"1922년 개벽 발표로 조사됨, 1925년 시집 수록",
-source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/엄마야_누나야",
-text:`엄마야 누나야 강변 살자,
+    id: "mother",
+    title: "엄마야 누나야",
+    poet: "김소월",
+    poetDeath: 1934,
+    year: 1922,
+    yearNote: "1922년 1월 개벽 제19호 발표 기록, 1925년 시집 수록",
+    collection: "진달래꽃 (1925)",
+    source: kimSource("엄마야 누나야"),
+    reference: kimSource("엄마야 누나야"),
+    theme: "가족과 함께하는 평화로운 삶에 대한 소망",
+    interpretation: "화자는 가족과 함께 강변에서 살아가기를 소망한다. 금모래빛과 갈잎의 노래는 평화롭고 아름다운 자연의 모습을 형성한다. 살자는 표현에는 미래에 대한 희망이 담겨 있지만 작품의 전체 분위기는 따뜻함과 평온함에 가깝다.",
+    text: `엄마야 누나야 강변 살자,
 뜰에는 반짝는 금모래빛,
 뒷문 밖에는 갈잎의 노래
-엄마야 누나야 강변 살자.`,
-theme:"가족과 평화로운 삶의 소망",
-interp:"강변은 화자가 바라는 삶의 공간이다. 금모래와 갈잎의 이미지는 포근하고 아름답다. 반복되는 청유는 소박한 행복에 대한 염원을 강조한다."
+엄마야 누나야 강변 살자.`
 },
-
 {
-id:"silence",
-title:"님의 침묵",
-poet:"한용운",
-poetDeath:1944,
-year:"1926",
-yearNote:"1926년 님의 침묵 시집 수록, 현대어 표기",
-source:"https://ko.wikisource.org/wiki/님의_침묵/님의_침묵",
-text:`임은 갔습니다. 아아, 사랑하는 나의 임은 갔습니다.
+    id: "silence",
+    title: "님의 침묵",
+    poet: "한용운",
+    poetDeath: 1944,
+    year: 1926,
+    yearNote: "1925년 시집 집필 완료, 1926년 회동서관 간행. 개별 작품 작성일 미확정",
+    collection: "님의 침묵 (1926)",
+    source: hanSource("님의 침묵"),
+    reference: AKS + "E0013399",
+    theme: "이별을 넘어서는 사랑과 재회의 희망",
+    interpretation: "화자는 임이 떠난 현실을 슬퍼하면서도 사랑을 포기하지 않는다. 이별의 고통을 희망의 힘으로 바꾸려는 태도는 작품의 정서적 전환을 보여 준다. 임은 사랑하는 사람뿐 아니라 자유와 이상 등 다양한 대상으로 해석될 수 있다.",
+    text: `임은 갔습니다. 아아, 사랑하는 나의 임은 갔습니다.
 
 푸른 산빛을 깨치고 단풍나무 숲을 향하여 난 작은 길을 걸어서 차마 떨치고 갔습니다.
 
@@ -580,20 +1059,21 @@ text:`임은 갔습니다. 아아, 사랑하는 나의 임은 갔습니다.
 
 우리는 만날 때에 떠날 것을 염려하는 것과 같이 떠날 때에 다시 만날 것을 믿습니다. 아아, 임은 갔지만은 나는 임을 보내지 아니하였습니다.
 
-제 곡조를 못 이기는 사랑의 노래는 임의 침묵을 휩싸고 돕니다.`,
-theme:"이별을 넘어서는 사랑과 믿음",
-interp:"이별은 분명하지만 화자는 관계가 끝났다고 보지 않는다. 슬픔을 희망으로 바꾸는 역전이 핵심이다. 임의 의미는 사랑하는 사람을 넘어 더 넓은 이상으로도 해석된다."
+제 곡조를 못 이기는 사랑의 노래는 임의 침묵을 휩싸고 돕니다.`
 },
-
 {
-id:"ferry",
-title:"나룻배와 행인",
-poet:"한용운",
-poetDeath:1944,
-year:"1926",
-yearNote:"1926년 님의 침묵 시집 수록, 현대어 표기",
-source:"https://ko.wikisource.org/wiki/님의_침묵/나룻배와_행인",
-text:`나는 나룻배
+    id: "ferry",
+    title: "나룻배와 행인",
+    poet: "한용운",
+    poetDeath: 1944,
+    year: 1926,
+    yearNote: "1926년 회동서관 시집 님의 침묵 수록. 개별 작품 작성일 미확정",
+    collection: "님의 침묵 (1926)",
+    source: hanSource("나룻배와 행인"),
+    reference: AKS + "E0013398",
+    theme: "헌신적인 사랑과 기다림",
+    interpretation: "화자는 자신을 나룻배에, 사랑하는 상대를 행인에 비유한다. 상대가 자신을 짓밟고 떠나더라도 화자는 계속해서 기다린다. 이러한 태도는 분노나 원망보다 조건 없이 상대를 받아들이는 헌신적인 사랑을 보여 준다.",
+    text: `나는 나룻배
 당신은 행인(行人)
 
 당신은 흙발로 나를 짓밟습니다
@@ -610,20 +1090,21 @@ text:`나는 나룻배
 나는 당신을 기다리면서 날마다날마다 낡아갑니다
 
 나는 나룻배
-당신은 행인`,
-theme:"헌신과 기다림",
-interp:"나룻배와 행인의 관계는 비대칭적이다. 배는 상처를 받으면서도 행인을 건네준다. 이 헌신은 단어 몇 개만으로 포착하기 어려운 비유적 감정이다."
+당신은 행인`
 },
-
 {
-id:"belated",
-title:"예전엔 미처 몰랐어요",
-poet:"김소월",
-poetDeath:1934,
-year:"1923",
-yearNote:"1923년 발표로 조사됨, 1925년 시집 수록",
-source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/예전엔_미처_몰랐어요",
-text:`봄 가을없이 밤마다 돋는 달도
+    id: "belated",
+    title: "예전엔 미처 몰랐어요",
+    poet: "김소월",
+    poetDeath: 1934,
+    year: 1925,
+    yearNote: "1925년 시집 진달래꽃 수록 기준. 1923년 발표설은 권호 미확정",
+    collection: "진달래꽃 (1925)",
+    source: kimSource("예전엔 미처 몰랐어요"),
+    reference: AKS + "E0071112",
+    theme: "뒤늦게 깨달은 그리움과 슬픔",
+    interpretation: "화자는 과거에는 알지 못했던 감정을 뒤늦게 깨닫는다. 달은 그리움과 설움을 불러일으키는 상징으로 작용한다. 반복되는 고백은 시간의 흐름 속에서 깊어진 상실감과 정서적 변화를 보여 준다.",
+    text: `봄 가을없이 밤마다 돋는 달도
 '예전엔 미처 몰랐어요.'
 
 이렇게 사무치게 그립을줄도
@@ -633,20 +1114,21 @@ text:`봄 가을없이 밤마다 돋는 달도
 '예전엔 미처 몰랐어요.'
 
 이제금 저 달이 설움인줄은
-'예전엔 미처 몰랐어요.'`,
-theme:"그리움의 뒤늦은 자각",
-interp:"달을 바라보며 자신의 감정을 새로 깨닫는다. 반복되는 후렴은 감정의 깊이를 키운다. 밝은 달이 설움으로 바뀌는 과정은 감정의 양면성을 드러낸다."
+'예전엔 미처 몰랐어요.'`
 },
-
 {
-id:"road",
-title:"길",
-poet:"김소월",
-poetDeath:1934,
-year:"1925",
-yearNote:"1925년 시집 수록, 최초 발표 연도 미확정",
-source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/길",
-text:`어제도 하룻밤
+    id: "road",
+    title: "길",
+    poet: "김소월",
+    poetDeath: 1934,
+    year: 1925,
+    yearNote: "1925년 시집 진달래꽃 수록 기준. 선행 잡지 발표 기록 미확인",
+    collection: "진달래꽃 (1925)",
+    source: kimSource("길"),
+    reference: kimSource("길"),
+    theme: "삶의 방향을 잃은 방황과 고향 상실",
+    interpretation: "화자는 여러 갈래의 길 앞에 서 있지만 자신이 갈 곳을 찾지 못한다. 자유롭게 이동하는 기러기와 화자의 처지는 대조를 이룬다. 길이라는 공간적 이미지는 삶의 방향을 잃은 불안과 고향을 상실한 외로움을 상징한다.",
+    text: `어제도 하룻밤
 나그네 집에
 까마귀 가왁가왁 울며 새었소.
 
@@ -672,20 +1154,21 @@ text:`어제도 하룻밤
 
 갈래갈래 갈린 길
 길이라도
-내게 바이 갈 길은 하나 없소.`,
-theme:"방황과 소외",
-interp:"길이 많지만 갈 길이 없다는 말은 막막함을 나타낸다. 나그네의 이동은 소속되지 못한 처지를 드러낸다. 기러기와 화자의 대비가 고립감을 심화한다."
+내게 바이 갈 길은 하나 없소.`
 },
-
 {
-id:"cuckoo",
-title:"접동새",
-poet:"김소월",
-poetDeath:1934,
-year:"1923",
-yearNote:"1923년 배재 발표로 조사됨, 1925년 시집 수록",
-source:"https://ko.wikisource.org/wiki/진달래꽃_(시집)/접동새",
-text:`접동
+    id: "cuckoo",
+    title: "접동새",
+    poet: "김소월",
+    poetDeath: 1934,
+    year: 1923,
+    yearNote: "1923년 3월 배재 제2호에 졉동으로 발표, 개작 후 1925년 시집 수록",
+    collection: "진달래꽃 (1925)",
+    source: kimSource("접동새"),
+    reference: AKS + "E0071333",
+    theme: "가족에 대한 사랑과 비극적 죽음의 슬픔",
+    interpretation: "의붓어머니의 시샘으로 죽은 누나는 접동새가 되어 돌아온다. 죽어서도 동생들을 잊지 못하는 모습은 가족에 대한 깊은 사랑을 드러낸다. 밤마다 들리는 접동새의 울음은 억울한 죽음과 이루어질 수 없는 그리움을 상징한다.",
+    text: `접동
 접동
 아우래비 접동
 
@@ -708,560 +1191,607 @@ text:`접동
 죽어서도 못잊어 차마 못잊어
 
 야삼경 남 다 자는 밤이 깊으면
-이 산 저 산 옮아가며 슬피 웁니다.`,
-theme:"가족애와 비극적 상실",
-interp:"접동새 울음은 죽은 누나의 슬픔을 전달한다. 설화적 변신은 억울함을 시각화한다. 가족에 대한 애착과 원한이 동시에 드러난다."
+이 산 저 산 옮아가며 슬피 웁니다.`
 }
-
 ];
 
-// =======================================
-// 3. 공통 함수
-// =======================================
+/* 4. 분석 엔진 */
 
 const $ = id => document.getElementById(id);
 
+const DICTIONARY = EMOTIONS.flatMap(
+    (emotion, index) => emotion.words.map(
+        word => ({word, index})
+    )
+).sort((a, b) => b.word.length - a.word.length);
+
 function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, c => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  }[c]));
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
 }
 
-// =======================================
-// 4. 감정 분석
-// =======================================
+function analyzeLine(text) {
+    const counts = EMOTIONS.map(() => 0);
+    const hits = [];
+    const used = new Array(text.length).fill(false);
+
+    DICTIONARY.forEach(entry => {
+        let position = 0;
+
+        while (position < text.length) {
+            const start = text.indexOf(entry.word, position);
+
+            if (start === -1) break;
+
+            const end = start + entry.word.length;
+            const occupied = used.slice(start, end).some(Boolean);
+
+            if (!occupied) {
+                for (let i = start; i < end; i++) {
+                    used[i] = true;
+                }
+
+                counts[entry.index]++;
+
+                hits.push({
+                    word: entry.word,
+                    index: entry.index,
+                    start,
+                    end
+                });
+            }
+
+            position = end;
+        }
+    });
+
+    hits.sort((a, b) => a.start - b.start);
+
+    return {
+        text,
+        counts,
+        hits,
+        total: counts.reduce((a, b) => a + b, 0)
+    };
+}
 
 function analyze(text) {
-  const candidates = [];
-
-  EMOS.forEach((emotion, emotionIndex) => {
-    emotion.words.forEach(word => {
-      let position = 0;
-
-      while (true) {
-        const found = text.indexOf(word, position);
-
-        if (found === -1) break;
-
-        candidates.push({
-          start: found,
-          end: found + word.length,
-          word: word,
-          emotionIndex: emotionIndex
-        });
-
-        position = found + word.length;
-      }
-    });
-  });
-
-  // 긴 단어를 먼저 선택하여 중복 계산 방지
-  candidates.sort((a, b) =>
-    (b.end - b.start) - (a.end - a.start) ||
-    a.start - b.start
-  );
-
-  const used = new Set();
-  const hits = [];
-  const counts = EMOS.map(() => 0);
-
-  candidates.forEach(hit => {
-    let overlap = false;
-
-    for (let i = hit.start; i < hit.end; i++) {
-      if (used.has(i)) {
-        overlap = true;
-        break;
-      }
-    }
-
-    if (overlap) return;
-
-    counts[hit.emotionIndex]++;
-    hits.push(hit);
-
-    for (let i = hit.start; i < hit.end; i++) {
-      used.add(i);
-    }
-  });
-
-  hits.sort((a, b) => a.start - b.start);
-
-  const total = counts.reduce((a, b) => a + b, 0);
-
-  const vec = counts.map(count =>
-    total ? count / total : 0
-  );
-
-  return {counts, total, vec, hits};
-}
-
-// =======================================
-// 5. 지배 정서
-// =======================================
-
-function dominant(result) {
-  if (!result.total) {
-    return "감정 단어 미감지";
-  }
-
-  const max = Math.max(...result.counts);
-
-  return EMOS
-    .filter((emotion, i) => result.counts[i] === max)
-    .map(emotion => emotion.name)
-    .join(" · ");
-}
-
-// =======================================
-// 6. 감정 그래프
-// =======================================
-
-function drawBars(result) {
-  if (!result.total) {
-    return '<p class="notice">등록된 감정 단어가 감지되지 않았습니다.</p>';
-  }
-
-  return EMOS.map((emotion, index) => {
-    const percent = (result.vec[index] * 100).toFixed(1);
-
-    return `
-      <div>
-        <strong>${emotion.name} ${percent}%</strong>
-        <div class="bar">
-          <div class="fill"
-            style="width:${percent}%;background:${emotion.color}">
-          </div>
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-// =======================================
-// 7. 감정 단어 색상 강조
-// =======================================
-function drawRadar(result) {
-  const cx = 200;
-  const cy = 200;
-  const radius = 120;
-  const n = EMOS.length;
-
-  function point(i, value) {
-    const angle = -Math.PI / 2 + i * 2 * Math.PI / n;
-
-    return [
-      cx + Math.cos(angle) * radius * value,
-      cy + Math.sin(angle) * radius * value
-    ];
-  }
-
-  let svg = `
-    <svg viewBox="0 0 400 400"
-         style="width:100%;height:auto;"
-         role="img"
-         aria-label="8가지 감정 비율 레이더 차트">
-  `;
-
-  // 25%, 50%, 75%, 100% 눈금
-  [0.25, 0.5, 0.75, 1].forEach(level => {
-    const points = EMOS.map((e, i) =>
-      point(i, level).join(",")
-    ).join(" ");
-
-    svg += `
-      <polygon points="${points}"
-        fill="none"
-        stroke="#cbd5e1"
-        stroke-width="1"/>
-      <text x="${cx + 5}"
-        y="${cy - radius * level + 12}"
-        font-size="10"
-        fill="#64748b">
-        ${level * 100}%
-      </text>
-    `;
-  });
-
-  // 감정별 축과 이름
-  EMOS.forEach((emotion, i) => {
-    const [x, y] = point(i, 1);
-    const [lx, ly] = point(i, 1.35);
-
-    svg += `
-      <line x1="${cx}" y1="${cy}"
-        x2="${x}" y2="${y}"
-        stroke="#cbd5e1"/>
-
-      <text x="${lx}" y="${ly}"
-        text-anchor="middle"
-        dominant-baseline="middle"
-        font-size="12"
-        font-weight="bold"
-        fill="${emotion.color}">
-        ${emotion.name}
-      </text>
-    `;
-  });
-
-  // 실제 감정 분석 결과
-  const dataPoints = result.vec.map((value, i) =>
-    point(i, value).join(",")
-  ).join(" ");
-
-  svg += `
-    <polygon points="${dataPoints}"
-      fill="#a38bd2"
-      fill-opacity="0.3"
-      stroke="#8b5cf6"
-      stroke-width="2"/>
-  `;
-
-  result.vec.forEach((value, i) => {
-    const [x, y] = point(i, value);
-
-    svg += `
-      <circle cx="${x}" cy="${y}"
-        r="4" fill="${EMOS[i].color}">
-        <title>
-          ${EMOS[i].name}: ${(value * 100).toFixed(1)}%
-        </title>
-      </circle>
-    `;
-  });
-
-  svg += "</svg>";
-
-  $("radar").innerHTML = svg +
-    (result.total
-      ? ""
-      : '<p class="notice">감지된 감정 단어가 없습니다.</p>');
-}
-
-function highlightText(text, result) {
-  let html = "";
-  let position = 0;
-
-  result.hits.forEach(hit => {
-    html += escapeHTML(text.slice(position, hit.start));
-
-    const emotion = EMOS[hit.emotionIndex];
-
-    html += `<mark style="background:${emotion.color}66" title="${emotion.name}">${escapeHTML(text.slice(hit.start, hit.end))}</mark>`;
-
-    position = hit.end;
-  });
-
-  html += escapeHTML(text.slice(position));
-
-  return html;
-}
-
-// =======================================
-// 8. 코사인 유사도
-// =======================================
-
-function cosine(a, b) {
-  let dot = 0;
-  let normA = 0;
-  let normB = 0;
-
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-
-  if (normA === 0 || normB === 0) return 0;
-
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
-}
-
-// =======================================
-// 9. 선택한 시 분석 화면
-// =======================================
-
-function render() {
-  const index = Number($("selector").value);
-  const poem = POEMS[index];
-
-  if (!poem) return;
-
-  const result = analyze(poem.text);
-
-  $("title").textContent = "📖 " + poem.title;
-
-  $("meta").textContent =
-    poem.poet +
-    " · 시인 사망 " + poem.poetDeath + "년" +
-    " · " + poem.yearNote;
-
-  $("poem").innerHTML = highlightText(poem.text, result);
-
-  // 작품 출처 링크
-  $("source").replaceChildren();
-
-  const sourceLabel = document.createTextNode("원문 참고 출처: ");
-  const sourceLink = document.createElement("a");
-
-  sourceLink.href = poem.source;
-  sourceLink.target = "_blank";
-  sourceLink.rel = "noopener noreferrer";
-  sourceLink.textContent = "위키문헌 참고 자료 ↗";
-
-  $("source").appendChild(sourceLabel);
-  $("source").appendChild(sourceLink);
-
-  $("bars").innerHTML = drawBars(result);
-
-  drawRadar(result);
-
-  const maxPercent = Math.max(...result.vec) * 100;
-
-$("dominant").textContent = result.total
-  ? "지배 정서: " + dominant(result) +
-    " (" + maxPercent.toFixed(1) + "%)"
-  : "지배 정서: 감정 단어 미감지";
-
-  $("theme").textContent =
-    "주제: " + poem.theme;
-
-  $("interpretation").textContent =
-    "문학적 해석: " + poem.interp;
-
-  $("sum").textContent =
-    "감정 단어 " + result.total + "회 감지" +
-    (result.total ? " · 표시 비율 합계 " + result.vec.reduce((a,b)=>a+Number((b*100).toFixed(1)),0).toFixed(1) + "%" : " · 감정 단어 미감지");
-
-  // 행별 분석
-  const lines = poem.text.split("\n");
-
-  $("lines").innerHTML = lines.map((line, lineIndex) => {
-    if (!line.trim()) return "";
-
-    const lineResult = analyze(line);
-
-    const badges = EMOS.map((emotion, i) => {
-      if (!lineResult.counts[i]) return "";
-
-      return `
-        <span class="badge">
-          ${emotion.name} ${lineResult.counts[i]}회
-        </span>
-      `;
-    }).join("");
-
-    return `
-      <div class="line">
-        <span class="meta">${lineIndex + 1}행</span>
-        <div>${escapeHTML(line)}</div>
-        <div>${badges || '<span class="badge">미감지</span>'}</div>
-      </div>
-    `;
-  }).join("");
-
-  // 행별 감정 흐름: 가로축 행 번호, 세로축 감지 횟수
-  const rows = lines.map((line, i) => ({line, n:i+1, ...analyze(line)})).filter(r => r.line.trim());
-  const max = Math.max(1, ...rows.map(r => r.total));
-  const w = Math.max(320, rows.length * 30 + 60), h = 240;
-  const base = 190, height = 150, step = (w - 65) / Math.max(1, rows.length);
-  let chart = `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="행별 감정 감지 횟수 누적 막대 차트">`;
-  chart += `<text x="8" y="18" font-size="12">감지 횟수(회)</text>`;
-  for (const tick of [...new Set([0, Math.ceil(max/2), max])]) {
-    const y = base - tick/max*height;
-    chart += `<line x1="35" y1="${y}" x2="${w-10}" y2="${y}" stroke="#ddd"/><text x="28" y="${y+4}" text-anchor="end" font-size="11">${tick}</text>`;
-  }
-  rows.forEach((r,j) => {
-    const x = 40+j*step; let y = base;
-    r.counts.forEach((count,i) => {
-      if (!count) return;
-      const bh = count/max*height; y -= bh;
-      chart += `<rect x="${x}" y="${y}" width="${Math.min(20,step-4)}" height="${bh}" fill="${EMOS[i].color}"><title>${r.n}행 ${EMOS[i].name}: ${count}회</title></rect>`;
-    });
-    chart += `<text x="${x+8}" y="${base+15}" text-anchor="middle" font-size="10">${r.n}</text>`;
-  });
-  chart += `<text x="${w/2}" y="230" text-anchor="middle" font-size="12">행 번호</text></svg>`;
-  $("flow").innerHTML = `<div style="overflow-x:auto;max-width:100%">${chart}</div>`;
-
-  // 단어 → 실제 감정 분류 → 문학적 주제
-  $("diagram").innerHTML = EMOS.map((emotion,i) => {
-    const words = [...new Set(result.hits.filter(hit => hit.emotionIndex === i).map(hit => hit.word))];
-    if (!words.length) return "";
-    return `<div style="width:100%"><span>${escapeHTML(words.join(" · "))}</span> → <strong>${emotion.name}</strong></div>`;
-  }).join("") + `<div style="width:100%">${result.total ? "문학적 주제 (별도 해석)" : "감정 단어 미감지 · 문학적 주제"}: ${escapeHTML(poem.theme)}</div>`;
-
-  // 유사한 시 3편 추천
-  const recommendations = POEMS.map((other, i) => ({
-    index: i,
-    score: cosine(result.vec, analyze(other.text).vec)
-  }))
-  .filter(item => item.index !== index && result.total > 0 && analyze(POEMS[item.index].text).total > 0)
-  .sort((a, b) => b.score - a.score)
-  .slice(0, 3);
-
-  $("recommendations").replaceChildren();
-  if (recommendations.length === 0) {
-  $("recommendations").textContent =
-    "감정 분석 결과가 부족하여 유사한 작품을 추천할 수 없습니다.";
-}
-
-  recommendations.forEach(item => {
-    const button = document.createElement("button");
-
-    button.textContent =
-      POEMS[item.index].title +
-      " — " + POEMS[item.index].poet +
-      " | 유사도 " + (Math.min(1, item.score) * 100).toFixed(1) + "%" + (item.score === 0 ? " (공통 감정 없음)" : "");
-
-    button.onclick = () => selectPoem(item.index);
-
-    $("recommendations").appendChild(button);
-  });
-}
-
-// =======================================
-// 10. 다른 시 선택
-// =======================================
-
-function selectPoem(index) {
-  $("selector").value = index;
-  render();
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
-
-// =======================================
-// 11. 전체 감정 히트맵
-// =======================================
-
-function drawHeatmap() {
-  const table = document.createElement("table");
-
-  const header = document.createElement("tr");
-
-  ["작품", ...EMOS.map(e => e.name)].forEach(name => {
-    const th = document.createElement("th");
-    th.textContent = name;
-    header.appendChild(th);
-  });
-
-  table.appendChild(header);
-
-  POEMS.forEach((poem, index) => {
-    const result = analyze(poem.text);
-    const row = document.createElement("tr");
-
-    const titleCell = document.createElement("td");
-    const titleButton = document.createElement("a");
-
-    titleButton.href = "#";
-    titleButton.textContent = poem.title;
-
-    titleButton.onclick = event => {
-      event.preventDefault();
-      selectPoem(index);
-    };
-
-    titleCell.appendChild(titleButton);
-    row.appendChild(titleCell);
-
-    result.vec.forEach((value, emotionIndex) => {
-      const td = document.createElement("td");
-
-      td.textContent = result.total ? (value * 100).toFixed(1) + "%" : "—";
-
-      const alpha = Math.round(18 + value * 205)
-        .toString(16)
-        .padStart(2, "0");
-
-      td.style.background =
-        EMOS[emotionIndex].color + alpha;
-
-      row.appendChild(td);
-    });
-
-    table.appendChild(row);
-  });
-
-  $("heatmap").replaceChildren(table);
-}
-
-// =======================================
-// 12. 사용자 입력 분석
-// =======================================
-
-function analyzeCustom() {
-  const text = $("custom").value.trim();
-
-  if (!text) {
-    $("customResult").innerHTML =
-      '<p class="notice">먼저 분석할 문장을 입력해 주세요.</p>';
-    return;
-  }
-
-  const result = analyze(text);
-
-  $("customResult").innerHTML =
-    "<h3>가장 많이 감지된 감정: " +
-    dominant(result) +
-    "</h3>" +
-    drawBars(result);
-}
-
-// =======================================
-// 13. 웹사이트 초기화
-// =======================================
-
-function init() {
-  // 시 15편 선택 목록
-  POEMS.forEach((poem, index) => {
-    const option = new Option(
-      (index + 1) + ". " +
-      poem.title + " — " + poem.poet,
-      index
+    const rawLines = text.replace(/\r\n/g, "\n").split("\n");
+
+    const lines = rawLines
+        .filter(line => line.trim() !== "")
+        .map((line, index) => ({
+            ...analyzeLine(line),
+            number: index + 1
+        }));
+
+    const counts = EMOTIONS.map((emotion, index) =>
+        lines.reduce((sum, line) => sum + line.counts[index], 0)
     );
 
-    $("selector").add(option);
-  });
+    const total = counts.reduce((a, b) => a + b, 0);
 
-  $("status").textContent =
-    "전체 " + POEMS.length +
-    "편 · 작품 선택 시 감정 분석 결과 자동 표시";
+    const vec = counts.map(count =>
+        total ? count / total : 0
+    );
 
-  // 감정 범례
-  $("legend").innerHTML = EMOS.map(emotion => `
-    <span>
-      <i class="dot" style="background:${emotion.color}"></i>
-      ${emotion.name}
-    </span>
-  `).join("");
+    const dominant = total
+        ? vec.indexOf(Math.max(...vec))
+        : -1;
 
-  // 감정 정의
-  $("definitions").innerHTML = EMOS.map(emotion => `
-    <p>
-      <strong>${emotion.name}</strong>:
-      ${emotion.def}
-      <span class="meta">
-        (${emotion.words.length}개 감정 어휘)
-      </span>
-    </p>
-  `).join("");
-
-  $("selector").onchange = render;
-  $("customBtn").onclick = analyzeCustom;
-
-  drawHeatmap();
-  render();
+    return {
+        lines,
+        counts,
+        total,
+        vec,
+        dominant,
+        method: "lexicon"
+    };
 }
 
-init();
+/* 소수점 첫째 자리에서 표시 합계를 100%로 보정 */
+
+function percentages(result) {
+    if (!result.total) {
+        return EMOTIONS.map(() => 0);
+    }
+
+    const raw = result.vec.map(value => value * 1000);
+    const rounded = raw.map(Math.floor);
+
+    let remainder = 1000 -
+        rounded.reduce((a, b) => a + b, 0);
+
+    const order = raw.map((value, index) => ({
+        index,
+        fraction: value - rounded[index]
+    })).sort((a, b) => b.fraction - a.fraction);
+
+    for (let i = 0; i < remainder; i++) {
+        rounded[order[i].index]++;
+    }
+
+    return rounded.map(value => value / 10);
+}
+
+const RESULTS = POEMS.map(poem => analyze(poem.text));
+
+function highlight(text) {
+    const result = analyzeLine(text);
+    let output = "";
+    let position = 0;
+
+    result.hits.forEach(hit => {
+        output += escapeHTML(
+            text.slice(position, hit.start)
+        );
+
+        const emotion = EMOTIONS[hit.index];
+
+        output += `<mark
+            title="${emotion.name}"
+            style="background:${emotion.color}55">
+            ${escapeHTML(text.slice(hit.start, hit.end))}
+        </mark>`.replace(/>\s+([^<]+?)\s+<\/mark>/g, ">$1</mark>");
+
+        position = hit.end;
+    });
+
+    output += escapeHTML(text.slice(position));
+
+    return output;
+}
+
+function highlightPoem(text) {
+    return text.split("\n").map(highlight).join("\n");
+}
+
+function barHTML(result) {
+    const values = percentages(result);
+
+    return EMOTIONS.map((emotion, index) => `
+        <div class="bar-row">
+            <span>${emotion.name}</span>
+            <div class="bar-track">
+                <div class="bar-fill"
+                    style="width:${values[index]}%;
+                    background:${emotion.color}">
+                </div>
+            </div>
+            <strong>${values[index].toFixed(1)}%</strong>
+        </div>
+    `).join("");
+}
+
+function dominantText(result) {
+    if (result.dominant === -1) {
+        return "감지된 감정 없음";
+    }
+
+    const values = percentages(result);
+    const maximum = Math.max(...result.counts);
+
+    const names = EMOTIONS
+        .filter((emotion, index) =>
+            result.counts[index] === maximum
+        )
+        .map(emotion => emotion.name);
+
+    return names.join(" · ") +
+        " " + values[result.dominant].toFixed(1) + "%";
+}
+
+/* 5. 레이더 차트 */
+
+function drawRadar(result) {
+    const center = 180;
+    const radius = 110;
+    const size = EMOTIONS.length;
+
+    function point(index, ratio) {
+        const angle = -Math.PI / 2 +
+            index * 2 * Math.PI / size;
+
+        return [
+            center + Math.cos(angle) * radius * ratio,
+            center + Math.sin(angle) * radius * ratio
+        ];
+    }
+
+    function polygon(ratios) {
+        return ratios.map((ratio, index) =>
+            point(index, ratio).join(",")
+        ).join(" ");
+    }
+
+    let svg = `
+        <svg viewBox="0 0 360 360"
+            role="img" aria-label="감정 비율 레이더 차트">
+    `;
+
+    [0.25, 0.5, 0.75, 1].forEach(level => {
+        svg += `<polygon
+            points="${polygon(EMOTIONS.map(() => level))}"
+            fill="none" stroke="#ded7e8"/>`;
+
+        svg += `<text x="${center + 4}"
+            y="${center - radius * level - 3}"
+            font-size="9" fill="#746e80">
+            ${level * 100}%
+        </text>`;
+    });
+
+    EMOTIONS.forEach((emotion, index) => {
+        const end = point(index, 1);
+        const label = point(index, 1.25);
+
+        svg += `<line x1="${center}" y1="${center}"
+            x2="${end[0]}" y2="${end[1]}"
+            stroke="#ded7e8"/>`;
+
+        svg += `<text x="${label[0]}" y="${label[1]}"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            font-size="12" fill="${emotion.color}"
+            font-weight="bold">${emotion.name}</text>`;
+    });
+
+    svg += `<polygon points="${polygon(result.vec)}"
+        fill="#a38bd244" stroke="#75639e"
+        stroke-width="2.5"/>`;
+
+    result.vec.forEach((ratio, index) => {
+        const p = point(index, ratio);
+
+        svg += `<circle cx="${p[0]}" cy="${p[1]}"
+            r="4" fill="${EMOTIONS[index].color}"/>`;
+    });
+
+    svg += "</svg>";
+
+    $("radar").innerHTML = svg;
+}
+
+/* 6. 행별 감정 흐름 */
+
+function drawFlow(result) {
+    $("legend").innerHTML = EMOTIONS.map(emotion => `
+        <span>
+            <span class="dot"
+                style="background:${emotion.color}"></span>
+            ${emotion.name}
+        </span>
+    `).join("");
+
+    const max = Math.max(
+        1,
+        ...result.lines.map(line => line.total)
+    );
+
+    const ticks = [...new Set([
+        max,
+        Math.floor(max / 2),
+        0
+    ])];
+
+    $("flowAxis").innerHTML = ticks.map(value =>
+        `<span>${value}</span>`
+    ).join("");
+
+    $("flow").innerHTML = result.lines.map(line => `
+        <div class="flow-column">
+            <div class="flow-stack">
+                ${line.counts.map((count, index) => `
+                    <div class="flow-segment"
+                        title="${EMOTIONS[index].name}: ${count}회"
+                        style="height:${count / max * 180}px;
+                        background:${EMOTIONS[index].color}">
+                    </div>
+                `).join("")}
+            </div>
+            <div class="flow-number">${line.number}</div>
+        </div>
+    `).join("");
+}
+
+/* 7. 행별 분석 표 */
+
+function drawLines(result) {
+    $("lines").innerHTML = result.lines.map(line => `
+        <tr>
+            <td>${line.number}</td>
+            <td>${highlight(line.text)}</td>
+            <td>
+                ${line.counts.map((count, index) =>
+                    count ? `
+                    <span class="tag"
+                        style="background:${EMOTIONS[index].color}44">
+                        ${EMOTIONS[index].name} ${count}
+                    </span>` : ""
+                ).join("") || "감지 없음"}
+            </td>
+            <td>
+                ${line.hits.map(hit =>
+                    escapeHTML(hit.word)
+                ).join(", ") || "—"}
+            </td>
+        </tr>
+    `).join("");
+}
+
+/* 8. 시어–감정–주제 다이어그램 */
+
+function drawDiagram(poem, result) {
+    if (!result.total) {
+        $("diagram").textContent = "감지된 시어가 없습니다.";
+        return;
+    }
+
+    $("diagram").innerHTML = EMOTIONS.map(
+        (emotion, index) => {
+            const words = [...new Set(
+                result.lines.flatMap(line =>
+                    line.hits
+                        .filter(hit => hit.index === index)
+                        .map(hit => hit.word)
+                )
+            )];
+
+            if (!words.length) return "";
+
+            return `
+                <div class="diagram-row">
+                    <div class="node">
+                        ${words.map(escapeHTML).join(", ")}
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="node"
+                        style="background:${emotion.color}55">
+                        ${emotion.name}
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="node">
+                        ${escapeHTML(poem.theme)}
+                    </div>
+                </div>
+            `;
+        }
+    ).join("");
+}
+
+/* 9. 코사인 유사도 */
+
+function cosine(a, b) {
+    const dot = a.reduce(
+        (sum, value, index) => sum + value * b[index], 0
+    );
+
+    const normA = Math.sqrt(
+        a.reduce((sum, value) => sum + value * value, 0)
+    );
+
+    const normB = Math.sqrt(
+        b.reduce((sum, value) => sum + value * value, 0)
+    );
+
+    if (!normA || !normB) return 0;
+
+    return Math.min(1, Math.max(0, dot / (normA * normB)));
+}
+
+function drawRecommendations(index) {
+    const current = RESULTS[index];
+
+    if (!current.total) {
+        $("recommendations").textContent =
+            "감지된 감정이 없어 유사도를 계산할 수 없습니다.";
+        return;
+    }
+
+    const ranked = POEMS.map((poem, i) => ({
+        poem,
+        index: i,
+        similarity: cosine(current.vec, RESULTS[i].vec)
+    }))
+    .filter(item => item.index !== index && RESULTS[item.index].total)
+    .sort((a, b) => b.similarity - a.similarity)
+    .slice(0, 3);
+
+    $("recommendations").innerHTML = ranked.map(item => `
+        <button class="recommend" data-index="${item.index}">
+            <span>
+                <strong>${escapeHTML(item.poem.title)}</strong><br>
+                <small>${item.poem.poet}</small>
+            </span>
+            <strong>
+                ${(item.similarity * 100).toFixed(1)}%
+            </strong>
+        </button>
+    `).join("");
+
+    $("recommendations")
+        .querySelectorAll("button")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                render(Number(button.dataset.index));
+                $("poemSection").scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            });
+        });
+}
+
+/* 10. 전체 비교 히트맵 */
+
+function drawHeatmap() {
+    let html = `
+        <thead>
+            <tr>
+                <th>작품</th>
+                ${EMOTIONS.map(emotion =>
+                    `<th>${emotion.name}</th>`
+                ).join("")}
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    POEMS.forEach((poem, index) => {
+        const values = percentages(RESULTS[index]);
+
+        html += `
+            <tr>
+                <th>${escapeHTML(poem.title)}</th>
+                ${values.map((value, i) => {
+                    const alpha = Math.round(
+                        value / 100 * 210 + 15
+                    ).toString(16).padStart(2, "0");
+
+                    return `<td style="background:
+                        ${EMOTIONS[i].color}${alpha}">
+                        ${value.toFixed(1)}%
+                    </td>`;
+                }).join("")}
+            </tr>
+        `;
+    });
+
+    $("heatmap").innerHTML = html + "</tbody>";
+}
+
+/* 11. 작품 목록 */
+
+function drawList(selected) {
+    $("poemList").innerHTML = POEMS.map((poem, index) => {
+        const result = RESULTS[index];
+
+        const color = result.dominant === -1
+            ? "#cccccc"
+            : EMOTIONS[result.dominant].color;
+
+        return `
+            <button
+                class="poem-button ${selected === index ? "active" : ""}"
+                data-index="${index}"
+                aria-pressed="${selected === index}">
+                <span class="dot"
+                    style="background:${color}"></span>
+                ${escapeHTML(poem.title)}
+                <small>${poem.poet} · ${poem.year}</small>
+            </button>
+        `;
+    }).join("");
+
+    $("poemList").querySelectorAll("button")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                render(Number(button.dataset.index));
+            });
+        });
+}
+
+/* 12. 화면 출력 */
+
+function render(index) {
+    const poem = POEMS[index];
+    const result = RESULTS[index];
+
+    $("title").textContent = poem.title;
+
+    $("meta").innerHTML = `
+        <strong>${poem.poet}</strong>
+        · 사망 ${poem.poetDeath}년<br>
+        발표·수록 기준 연도: ${poem.year}년<br>
+        ${escapeHTML(poem.yearNote)}
+    `;
+
+    $("poem").innerHTML = highlightPoem(poem.text);
+
+    $("source").innerHTML = `
+        원문 출처: ${escapeHTML(poem.collection)}<br>
+        <a href="${poem.source}"
+            target="_blank" rel="noopener noreferrer">
+            위키문헌 원문 보기
+        </a><br>
+        <a href="${poem.reference}"
+            target="_blank" rel="noopener noreferrer">
+            발표·수록 기록 참고 자료
+        </a>
+    `;
+
+    $("bars").innerHTML = barHTML(result);
+
+    const sum = percentages(result)
+        .reduce((a, b) => a + b, 0);
+
+    $("sum").textContent = result.total
+        ? `감지 횟수: ${result.total}회 · 표시 비율 합계: ${sum.toFixed(1)}%`
+        : "감지된 감정 어휘가 없습니다.";
+
+    $("dominant").textContent = dominantText(result);
+    $("theme").textContent = poem.theme;
+    $("interpretation").textContent = poem.interpretation;
+
+    drawList(index);
+    drawRadar(result);
+    drawFlow(result);
+    drawLines(result);
+    drawDiagram(poem, result);
+    drawRecommendations(index);
+}
+
+/* 13. 직접 입력한 시 분석 */
+
+$("customButton").addEventListener("click", () => {
+    const title = $("customTitle").value.trim() || "나의 시";
+    const text = $("customText").value.trim();
+
+    if (!text) {
+        $("customResult").innerHTML =
+            '<p class="note">분석할 시를 입력해 주세요.</p>';
+        return;
+    }
+
+    const result = analyze(text);
+
+    if (!result.total) {
+        $("customResult").innerHTML =
+            '<p class="note">감정 사전에 해당하는 어휘가 없습니다. 다른 표현을 입력해 주세요.</p>';
+        return;
+    }
+
+    $("customResult").innerHTML = `
+        <h3>${escapeHTML(title)}</h3>
+        ${barHTML(result)}
+        <p><strong>${dominantText(result)}</strong></p>
+        <p class="note">총 감지 횟수: ${result.total}회</p>
+        <div class="poem-text">${highlightPoem(text)}</div>
+        <p class="note">문학적 해석이 아닌 사전 기반 결과입니다.</p>
+    `;
+});
+
+/* 14. 감정 범주 정의 */
+
+$("definitions").innerHTML = EMOTIONS.map(emotion => `
+    <p>
+        <span class="dot"
+            style="background:${emotion.color}"></span>
+        <strong>${emotion.name}</strong>:
+        ${emotion.def}
+        <span class="note">(${emotion.words.length}개 어휘)</span>
+    </p>
+`).join("");
+
+/* 15. 초기 실행 */
+
+drawHeatmap();
+render(0);
 
 </script>
 
