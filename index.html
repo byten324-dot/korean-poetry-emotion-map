@@ -899,8 +899,12 @@ function render() {
 
   $("bars").innerHTML = drawBars(result);
 
-  $("dominant").textContent =
-    "지배 정서: " + dominant(result);
+  const maxPercent = Math.max(...result.vec) * 100;
+
+$("dominant").textContent = result.total
+  ? "지배 정서: " + dominant(result) +
+    " (" + maxPercent.toFixed(1) + "%)"
+  : "지배 정서: 감정 단어 미감지";
 
   $("theme").textContent =
     "주제: " + poem.theme;
